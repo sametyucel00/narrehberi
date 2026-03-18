@@ -28,7 +28,7 @@ export async function sendSms(params) {
   const { gsm, message, msgHeader } = params || {};
   const normalizedGsm = String(gsm || '').replace(/\D/g, '');
   if (normalizedGsm.length < 10) return { ok: false, error: 'Geçersiz GSM' };
-  if (!message?.trim()) return { ok: false, error: 'Mesaj boş' };
+  if (!message?.trim()) return { ok: false, error: 'Mesaj bo_' };
 
   if (!isLive) {
     console.log('[NetGSM Simülasyon]', { gsm: normalizedGsm, message: message.trim().substring(0, 160), msgHeader: msgHeader || 'NAR REHBERI', simülasyonHedef: PRIMARY_PHONE_RAW });

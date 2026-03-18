@@ -1,0 +1,780 @@
+/**
+ * ╔══════════════════════════════════════════════════════════════════╗
+ * ║  NAR REHBERİ — ANA UYGULAMA v4                                   ║
+ * ║  ✅ Onboarding: Hoş Geldiniz → Dil → Konum (3 adım)             ║
+ * Q   Hero Arama: "Ne ar1yorsun Kadir?" + BUL butonu              Q
+ * ║  ✅ TimeSuggestion: "ÖĞLE YAKLAŞIYOR" atmosfer kartı             ║
+ * ║  ✅ NarHeader: Premium gradient + YÖNETİM                        ║
+ * ║  ✅ YÖNETİM EKLENDİ: DT_ADMIN (Sinopsis) & MASTER Panelleri      ║
+ * ║  SRC/App.jsx olarak kullan                                       ║
+ * ╚══════════════════════════════════════════════════════════════════╝
+ */
+
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+import KategoriVitrin from "./components/KategoriVitrin.jsx";
+// import { signInWithGoogle, signOutUser, onAuthChange } from "./config/firebase.js"; // İleride Firebase kurulunca açılacak
+
+// --- YÖNETİM PANELLERİ İÇİN EKLENEN İMPORTLAR ---
+import AuthGateway       from "./components/AuthGateway.jsx";
+import TheaterAdminPanel from "./components/TheaterAdminPanel.jsx";
+import MasterPanel       from "./components/MasterPanel.jsx";
+import KurumsalPanel     from "./components/KurumsalPanel.jsx";
+import BireyselIlanFormu from "./components/BireyselIlanFormu.jsx";
+// ------------------------------------------------
+
+/* ─── TEMA ──────────────────────────────────────────────────────── */
+const C = {
+  bg:    "#0a0a0f",
+  gold:  "#D4AF37",
+  goldD: "rgba(212,175,55,0.10)",
+  goldB: "rgba(212,175,55,0.18)",
+  goldX: "rgba(212,175,55,0.35)",
+  text:  "rgba(238,230,210,0.92)",
+  muted: "rgba(168,155,128,0.48)",
+  ok:    "#4caf7d",
+  serif: "'Cormorant Garamond','Garamond',serif",
+  sans:  "'Jost','Segoe UI',sans-serif",
+};
+
+/* ─── SESSION ───────────────────────────────────────────────────── */
+const OB_KEY = "nar_session_v1";
+const loadSession  = () => { try { const r = localStorage.getItem(OB_KEY); return r ? JSON.parse(r) : null; } catch { return null; } };
+const saveSession  = (s) => { try { localStorage.setItem(OB_KEY, JSON.stringify(s)); } catch {} };
+const clearSession = ()  => { try { localStorage.removeItem(OB_KEY); } catch {} };
+
+/* ══════════════════════════════════════════════════════════════════
+   ONBOARDING — 3 adım: Karşılama → Dil → Konum
+   (Image 4 / 5 / 6 birebir)
+══════════════════════════════════════════════════════════════════ */
+const DILLER = [
+  { kod:"TR", ad:"Türkçe",  bayrak:"🇹🇷", alt:"Antalya'nın ruhunu keşfedin" },
+  { kod:"EN", ad:"English", bayrak:"🇬🇧", alt:"Discover the soul of Antalya" },
+  { kod:"RU", ad:"Русский", bayrak:"🇷🇺", alt:"Откройте душу Анталии" },
+  { kod:"DE", ad:"Deutsch", bayrak:"🇩🇪", alt:"Entdecken Sie die Seele Antalyas" },
+];
+
+function detectLang() {
+  const nav = (navigator.language || navigator.languages?.[0] || "tr").slice(0,2).toUpperCase();
+  const found = DILLER.find(d => d.kod === nav);
+  return found ? found.kod : "TR";
+}
+
+/* Adım noktaları */
+function Steps({ step }) {
+  return (
+    <div style={{ display:"flex", alignItems:"center", gap:6, justifyContent:"center", marginBottom:28 }}>
+      {[0,1,2].map(i => (
+        <motion.div key={i}
+          animate={{ width: i === step ? 28 : 6, background: i === step ? C.gold : `rgba(212,175,55,0.25)` }}
+          transition={{ duration:0.35 }}
+          style={{ height:6, borderRadius:3 }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function OnboardingScreen({ onDone }) {
+  const [step, setStep]   = useState(0);
+  const [lang, setLang]   = useState(detectLang());
+  const [konumDur, setKonumDur] = useState("BEKLE"); // BEKLE | OK | HATA | ATLA
+
+  /* Adım 0 — Karşılama */
+  const StepKarsilama = () => (
+    <motion.div key="s0"
+      initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
+      exit={{ opacity:0, y:-20 }} transition={{ duration:0.55, ease:[0.22,1,0.36,1] }}
+      style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:0 }}>
+
+      {/* NAR logosu – halka */}
+      <motion.div initial={{ scale:0.7, opacity:0 }} animate={{ scale:1, opacity:1 }}
+        transition={{ delay:0.3, duration:0.7, type:"spring", stiffness:90 }}
+        style={{ marginBottom:28 }}>
+        <div style={{
+          width:72, height:72, borderRadius:"50%",
+          border:`1px solid rgba(212,175,55,0.5)`,
+          display:"flex", alignItems:"center", justifyContent:"center",
+          background:"rgba(212,175,55,0.06)",
+          boxShadow:"0 0 28px rgba(212,175,55,0.12)",
+        }}>
+          <div style={{
+            width:52, height:52, borderRadius:"50%",
+            background:`radial-gradient(circle,rgba(212,175,55,0.22) 0%,transparent 70%)`,
+            border:`1px solid rgba(212,175,55,0.3)`,
+            display:"flex", alignItems:"center", justifyContent:"center",
+          }}>
+            <span style={{ fontSize:22 }}>🍎</span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Altın ince çizgi */}
+      <motion.div initial={{ scaleX:0 }} animate={{ scaleX:1 }}
+        transition={{ delay:0.5, duration:0.8, ease:"easeOut" }}
+        style={{ width:80, height:1,
+          background:"linear-gradient(90deg,transparent,rgba(212,175,55,0.6),transparent)",
+          transformOrigin:"center", marginBottom:20 }}/>
+
+      <span style={{ fontFamily:C.sans, fontSize:10, color:C.gold,
+        letterSpacing:"0.28em", textTransform:"uppercase", marginBottom:10 }}>
+        NAR REHBERİ
+      </span>
+
+      <motion.h1 initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.6 }}
+        style={{ fontFamily:C.serif, fontSize:42, fontWeight:400,
+          color:C.text, letterSpacing:"0.02em", margin:"0 0 10px", textAlign:"center" }}>
+        Hoş Geldiniz
+      </motion.h1>
+
+      <motion.p initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.8 }}
+        style={{ fontFamily:C.sans, fontSize:12, color:C.muted,
+          letterSpacing:"0.04em", margin:"0 0 30px", textAlign:"center" }}>
+        Antalya'nın ruhunu keşfedin
+      </motion.p>
+
+      {/* Dil algılama notu */}
+      <motion.div initial={{ opacity:0, y:4 }} animate={{ opacity:1, y:0 }} transition={{ delay:1 }}
+        style={{ display:"flex", alignItems:"center", gap:8, padding:"9px 14px",
+          background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)",
+          borderRadius:4, marginBottom:24, width:"100%", maxWidth:320, boxSizing:"border-box" }}>
+        <div style={{ width:7, height:7, borderRadius:"50%", background:C.ok, flexShrink:0 }}/>
+        <span style={{ fontFamily:C.sans, fontSize:11, color:C.muted }}>
+          Taray1c1 dili alg1land1: {DILLER.find(d=>d.kod===lang)?.bayrak} {DILLER.find(d=>d.kod===lang)?.ad}
+        </span>
+      </motion.div>
+
+      <motion.button whileHover={{ scale:1.02 }} whileTap={{ scale:0.98 }}
+        onClick={() => setStep(1)}
+        style={{ width:"100%", maxWidth:320, padding:"16px",
+          background:`linear-gradient(135deg,${C.gold},#b8952a)`,
+          border:"none", borderRadius:4, color:"#0a0a0f",
+          fontFamily:C.sans, fontSize:12, fontWeight:700,
+          letterSpacing:"0.18em", cursor:"pointer",
+          boxShadow:"0 4px 20px rgba(212,175,55,0.3)" }}>
+        KEŞFETMEYE BAŞLA →
+      </motion.button>
+    </motion.div>
+  );
+
+  /* Adım 1 — Dil seçimi */
+  const StepDil = () => (
+    <motion.div key="s1"
+      initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
+      exit={{ opacity:0, y:-20 }} transition={{ duration:0.45, ease:[0.22,1,0.36,1] }}
+      style={{ width:"100%", maxWidth:380 }}>
+
+      <p style={{ fontFamily:C.sans, fontSize:10, color:C.gold,
+        letterSpacing:"0.22em", textTransform:"uppercase", textAlign:"center", marginBottom:8 }}>
+        2 / 3 — DİL TERCİHİ
+      </p>
+
+      <h2 style={{ fontFamily:C.serif, fontSize:34, fontWeight:400,
+        color:C.text, textAlign:"center", margin:"0 0 6px" }}>
+        Dilinizi Seçin
+      </h2>
+      <p style={{ fontFamily:C.sans, fontSize:11, color:C.muted,
+        textAlign:"center", margin:"0 0 24px" }}>
+        Choose · Выберите · Wählen Sie
+      </p>
+
+      <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:24 }}>
+        {DILLER.map(d => (
+          <motion.button key={d.kod} whileTap={{ scale:0.98 }}
+            onClick={() => setLang(d.kod)}
+            style={{
+              display:"flex", alignItems:"center", gap:14, padding:"14px 16px",
+              background: lang === d.kod ? "rgba(212,175,55,0.08)" : "rgba(255,255,255,0.025)",
+              border: lang === d.kod ? `1px solid ${C.gold}` : "1px solid rgba(255,255,255,0.06)",
+              borderRadius:4, cursor:"pointer", width:"100%", textAlign:"left",
+              transition:"all 0.2s",
+            }}>
+            <div style={{ width:18, height:18, borderRadius:"50%",
+              border: lang === d.kod ? `5px solid ${C.gold}` : "2px solid rgba(255,255,255,0.2)",
+              flexShrink:0, transition:"all 0.2s" }}/>
+            <span style={{ fontSize:22 }}>{d.bayrak}</span>
+            <div>
+              <div style={{ fontFamily:C.serif, fontSize:17, color: lang === d.kod ? C.gold : C.text }}>
+                {d.ad}
+              </div>
+              <div style={{ fontFamily:C.sans, fontSize:9.5, color:C.muted, marginTop:1 }}>
+                {d.alt}
+              </div>
+            </div>
+            {lang === d.kod && (
+              <span style={{ marginLeft:"auto", color:C.gold, fontSize:13 }}>✓</span>
+            )}
+          </motion.button>
+        ))}
+      </div>
+
+      <div style={{ display:"flex", gap:10 }}>
+        <button onClick={() => setStep(0)}
+          style={{ flex:1, padding:"14px", background:"rgba(255,255,255,0.03)",
+            border:"1px solid rgba(255,255,255,0.08)", borderRadius:4,
+            color:C.muted, fontFamily:C.sans, fontSize:11, cursor:"pointer",
+            letterSpacing:"0.1em" }}>
+          ← Geri
+        </button>
+        <motion.button whileHover={{ scale:1.02 }} whileTap={{ scale:0.98 }}
+          onClick={() => setStep(2)}
+          style={{ flex:1, padding:"14px",
+            background:`linear-gradient(135deg,${C.gold},#b8952a)`,
+            border:"none", borderRadius:4, color:"#0a0a0f",
+            fontFamily:C.sans, fontSize:11, fontWeight:700,
+            letterSpacing:"0.14em", cursor:"pointer" }}>
+          DEVAM ET →
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+
+  /* Adım 2 — Konum */
+  const StepKonum = () => {
+    const iste = () => {
+      setKonumDur("BEKLE_IZIN");
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          setKonumDur("OK");
+          setTimeout(() => onDone({ lang, coords: { lat: pos.coords.latitude, lng: pos.coords.longitude } }), 600);
+        },
+        () => setKonumDur("HATA"),
+        { timeout:8000 }
+      );
+    };
+
+    return (
+      <motion.div key="s2"
+        initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
+        exit={{ opacity:0, y:-20 }} transition={{ duration:0.45, ease:[0.22,1,0.36,1] }}
+        style={{ width:"100%", maxWidth:380, textAlign:"center" }}>
+
+        <p style={{ fontFamily:C.sans, fontSize:10, color:C.gold,
+          letterSpacing:"0.22em", textTransform:"uppercase", marginBottom:8 }}>
+          3 / 3 — KONUM
+        </p>
+
+        {/* Konum ikonu */}
+        <motion.div initial={{ scale:0.8, opacity:0 }} animate={{ scale:1, opacity:1 }}
+          transition={{ delay:0.2, type:"spring", stiffness:90 }}
+          style={{ margin:"0 auto 24px",
+            width:60, height:60, borderRadius:"50%",
+            border:`2px solid rgba(212,175,55,0.35)`,
+            display:"flex", alignItems:"center", justifyContent:"center",
+            background:"rgba(212,175,55,0.06)" }}>
+          <div style={{ width:42, height:42, borderRadius:"50%",
+            border:"2px solid rgba(212,175,55,0.2)",
+            display:"flex", alignItems:"center", justifyContent:"center",
+            background:"rgba(212,175,55,0.04)" }}>
+            <span style={{ fontSize:20 }}>
+              {konumDur === "OK" ? "" : "�"}
+            </span>
+          </div>
+        </motion.div>
+
+        <h2 style={{ fontFamily:C.serif, fontSize:34, fontWeight:400, color:C.text, margin:"0 0 8px" }}>
+          Konumunuz
+        </h2>
+        <p style={{ fontFamily:C.sans, fontSize:12, color:C.muted, margin:"0 0 30px", letterSpacing:"0.02em" }}>
+          En yakın Nar Seçimi deneyimleri için
+        </p>
+
+        {konumDur === "HATA" && (
+          <p style={{ fontFamily:C.sans, fontSize:10, color:"#e07070",
+            margin:"0 0 12px", letterSpacing:"0.05em" }}>
+            ⚠ Konum izni verilmedi
+          </p>
+        )}
+
+        <motion.button whileHover={{ scale:1.02 }} whileTap={{ scale:0.98 }}
+          onClick={iste}
+          disabled={konumDur === "BEKLE_IZIN" || konumDur === "OK"}
+          style={{ width:"100%", padding:"16px",
+            background:konumDur === "OK"
+              ? `linear-gradient(135deg,#4caf7d,#3a8a5e)`
+              : `linear-gradient(135deg,${C.gold},#b8952a)`,
+            border:"none", borderRadius:4, color:"#0a0a0f",
+            fontFamily:C.sans, fontSize:12, fontWeight:700,
+            letterSpacing:"0.14em", cursor: konumDur==="OK"?"default":"pointer",
+            boxShadow:"0 4px 20px rgba(212,175,55,0.25)", marginBottom:10 }}>
+          {konumDur === "OK" ? " KONUM ALINDI" :
+           konumDur === "BEKLE_IZIN" ? " Bekleniyor..." :
+           "• KONUMU PAYLAŞ"}
+        </motion.button>
+
+        <button onClick={() => onDone({ lang, coords: null })}
+          style={{ width:"100%", padding:"14px", background:"none",
+            border:"1px solid rgba(255,255,255,0.08)", borderRadius:4,
+            color:C.muted, fontFamily:C.sans, fontSize:11,
+            cursor:"pointer", letterSpacing:"0.08em" }}>
+          Konumsuz Devam Et
+        </button>
+
+        <p style={{ fontFamily:C.sans, fontSize:9, color:"rgba(255,255,255,0.18)",
+          margin:"14px 0 0", lineHeight:1.5 }}>
+          Konum verisi yalnızca mesafe sıralaması için kullanılır,
+          sunucularımıza gönderilmez.
+        </p>
+      </motion.div>
+    );
+  };
+
+  return (
+    <div style={{
+      minHeight:"100vh", background:C.bg,
+      display:"flex", flexDirection:"column",
+      alignItems:"center", justifyContent:"center",
+      padding:"40px 24px",
+      fontFamily:C.sans,
+    }}>
+      {/* Arka plan parçacıkları */}
+      {[...Array(6)].map((_,i) => (
+        <motion.div key={i}
+          animate={{ y:[-12,12,-12], opacity:[0.04,0.09,0.04] }}
+          transition={{ duration:5+i*1.2, repeat:Infinity, ease:"easeInOut", delay:i*0.9 }}
+          style={{
+            position:"fixed",
+            left:`${12+i*16}%`, top:`${18+i*12}%`,
+            width: i%2===0 ? 140 : 80, height: i%2===0 ? 140 : 80,
+            borderRadius:"50%",
+            background:`radial-gradient(circle,rgba(212,175,55,0.07) 0%,transparent 70%)`,
+            pointerEvents:"none",
+          }}
+        />
+      ))}
+
+      <Steps step={step} />
+
+      <AnimatePresence mode="wait">
+        {step === 0 && <StepKarsilama key="s0" />}
+        {step === 1 && <StepDil key="s1" />}
+        {step === 2 && <StepKonum key="s2" />}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TIME SUGGESTION — "ÖĞLE YAKLAŞIYOR" atmosfer kartı
+   (Image 2 birebir)
+══════════════════════════════════════════════════════════════════ */
+const TIYATRO_LIST = [
+  { ad:"Othello",         mekan:"Haşim İşcan Kültür Merkezi",  ipucu:"Kıskançlığın trajedisi bu gece sahnede." },
+  { ad:"Beklenirken Godot", mekan:"Devlet Tiyatrosu Ana Sahne", ipucu:"Sizi de beklediği şeyden emin olmayan biri var." },
+  { ad:"Medea",           mekan:"Atatürk Kültür Merkezi",       ipucu:"Sevginin en karanlık yüzü bu akşam aydınlanıyor." },
+];
+const ETKINLIK_LIST = [
+  { tur:"Fuar",   ad:"Cam Piramit Kitap Fuarı",               detay:"Son 2 gün, 11:00–20:00." },
+  { tur:"Konser", ad:"Boğaziçi Caz Festivali – Antalya Etabı", detay:"Açık hava, Karaalioğlu Parkı, 20:30." },
+  { tur:"Sergi",  ad:"Atatürk Müzesi – Dijital Anılar",        detay:"Ücretsiz giriş, Cumartesi'ye kadar." },
+];
+const TS_SLOTS = {
+  sabah:  { selamlama:"Günaydın.",         rutin:"Güne asil bir başlangıç için liyakatli bir üçüncü nesil kahveci eşleşmesi hazırladım.", ikon:"☕" },
+  ogle:   { selamlama:"Öğle yaklaşıyor.",  rutin:"Şehrin gürültüsünden izole, sessiz bir lezzet noktası sizi bekliyor.", ikon:"🍽" },
+  ikindi: { selamlama:"İyi akşamlar.",     rutin:"Günün enerjisini taze tutmak için özel bir seçkiyi hazırladım.", ikon:"🌆" },
+  gece:   { selamlama:"Gece daha yeni başlıyor.", rutin:"Günün yorgunluğunu silecek elit bir ortam eşleşmesi hazır.", ikon:"🥃" },
+};
+function tsSlot(h) {
+  if (h>=5  && h<11) return "sabah";
+  if (h>=11 && h<15) return "ogle";
+  if (h>=15 && h<19) return "ikindi";
+  return "gece";
+}
+function buildWhisper(h) {
+  const slot = tsSlot(h);
+  const data = TS_SLOTS[slot];
+  const tiy  = TIYATRO_LIST[Math.floor(Math.random()*TIYATRO_LIST.length)];
+  const etk  = ETKINLIK_LIST[Math.floor(Math.random()*ETKINLIK_LIST.length)];
+  const ekBilgi = h>=5&&h<20
+    ? `Bu ak_am ${tiy.mekan}'da <em>${tiy.ad}</em>  ${tiy.ipucu}`
+    : `${etk.tur}: <em>${etk.ad}</em>. ${etk.detay}`;
+  return { ...data, ekBilgi, slot };
+}
+
+function TimeSuggestion() {
+  const [whisper, setWhisper] = useState(null);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const now = new Date();
+    setWhisper(buildWhisper(now.getHours()));
+    const ms = (60-now.getMinutes())*60000 - now.getSeconds()*1000;
+    const t = setTimeout(() => {
+      setVisible(false);
+      setTimeout(() => { setWhisper(buildWhisper(new Date().getHours())); setVisible(true); }, 800);
+    }, ms);
+    return () => clearTimeout(t);
+  }, []);
+
+  if (!whisper) return null;
+
+  return (
+    <div style={{ padding:"24px 16px 0" }}>
+      <AnimatePresence mode="wait">
+        {visible && (
+          <motion.div key={whisper.slot}
+            initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
+            exit={{ opacity:0, y:-8 }} transition={{ duration:1.1, ease:[0.22,1,0.36,1] }}
+            style={{
+              position:"relative", width:"100%",
+              maxWidth:480, margin:"0 auto",
+              padding:"20px 24px 18px",
+              background:"linear-gradient(135deg,rgba(212,175,55,0.045) 0%,rgba(0,0,0,0) 60%)",
+              border:"1px solid rgba(212,175,55,0.12)",
+              borderRadius:2,
+              backdropFilter:"blur(6px)",
+            }}>
+
+            {/* Üst altın çizgi */}
+            <motion.div initial={{ scaleX:0 }} animate={{ scaleX:1 }}
+              transition={{ duration:1.4, delay:0.3, ease:"easeOut" }}
+              style={{ position:"absolute", top:0, left:24, right:24, height:1,
+                background:"linear-gradient(90deg,transparent,#D4AF37 40%,#D4AF37 60%,transparent)",
+                transformOrigin:"left", opacity:0.6 }}/>
+
+            {/* İkon + Selamlama */}
+            <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }}
+              transition={{ delay:0.5, duration:0.8 }}
+              style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+              <span style={{ fontSize:12, opacity:0.85 }}>{whisper.ikon}</span>
+              <span style={{ fontFamily:C.serif, fontSize:11, fontWeight:600,
+                letterSpacing:"0.18em", textTransform:"uppercase", color:C.gold }}>
+                {whisper.selamlama}
+              </span>
+            </motion.div>
+
+            {/* Ana metin */}
+            <motion.p initial={{ opacity:0 }} animate={{ opacity:1 }}
+              transition={{ delay:0.75, duration:0.9 }}
+              style={{ fontFamily:C.serif, fontSize:14.5, fontWeight:400,
+                lineHeight:1.65, color:"rgba(240,234,218,0.92)", margin:"0 0 10px" }}>
+              {whisper.rutin}
+            </motion.p>
+
+            {/* İtalik altın ek bilgi */}
+            <motion.p initial={{ opacity:0 }} animate={{ opacity:0.72 }}
+              transition={{ delay:1.05, duration:0.9 }}
+              dangerouslySetInnerHTML={{ __html: whisper.ekBilgi }}
+              style={{ fontFamily:C.serif, fontSize:12.5, fontStyle:"italic",
+                fontWeight:300, lineHeight:1.55, color:"rgba(212,175,55,0.7)", margin:0 }}/>
+
+            {/* Alt dekor nokta */}
+            <motion.div initial={{ opacity:0, scale:0 }} animate={{ opacity:1, scale:1 }}
+              transition={{ delay:1.4, duration:0.4, type:"spring" }}
+              style={{ position:"absolute", bottom:14, right:24,
+                width:4, height:4, borderRadius:"50%", background:C.gold, opacity:0.5 }}/>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   NAR HEADER — Premium gradient
+══════════════════════════════════════════════════════════════════ */
+function NarHeader({ session, googleUser, onAdmin }) {
+  const [authLoading, setAuthLoading] = useState(false);
+
+  const handleGoogle = async () => {
+    /* Firebase geçici olarak devre dışı
+    if (googleUser) { await signOutUser(); return; }
+    setAuthLoading(true);
+    try { await signInWithGoogle(); } catch(e){ console.error(e); }
+    finally { setAuthLoading(false); }
+    */
+  };
+
+  return (
+    <motion.header initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }}
+      style={{
+        background:"linear-gradient(180deg,#13111c 0%,#0e0c18 100%)",
+        position:"sticky", top:0, zIndex:200,
+        height:56, display:"flex", alignItems:"center",
+        justifyContent:"space-between", padding:"0 20px",
+        backdropFilter:"blur(12px)",
+      }}>
+
+      <div style={{ position:"absolute", bottom:0, left:0, right:0, height:1,
+        background:"linear-gradient(90deg,transparent,rgba(212,175,55,0.35) 30%,rgba(212,175,55,0.35) 70%,transparent)" }}/>
+
+      {/* Logo */}
+      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+        <span style={{ fontSize:20, filter:"drop-shadow(0 0 6px rgba(212,175,55,0.4))" }}>🍎</span>
+        <span style={{ fontFamily:C.serif, fontSize:18, color:C.gold, fontWeight:600, letterSpacing:"0.10em" }}>NAR</span>
+        <div style={{ width:1, height:14, background:"rgba(212,175,55,0.25)" }}/>
+        <span style={{ fontFamily:C.sans, fontSize:8, color:C.gold, opacity:0.45, letterSpacing:"0.28em" }}>REHBERİ</span>
+      </div>
+
+      {/* Sağ */}
+      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+        {session?.coords && (
+          <motion.div animate={{ opacity:[0.5,1,0.5] }} transition={{ duration:2.5, repeat:Infinity }}
+            style={{ display:"flex", alignItems:"center", gap:5, padding:"3px 10px",
+              borderRadius:20, background:"rgba(76,175,77,0.08)", border:"1px solid rgba(76,175,77,0.2)" }}>
+            <div style={{ width:5, height:5, borderRadius:"50%", background:C.ok }}/>
+            <span style={{ fontSize:8, color:C.ok, letterSpacing:"0.1em" }}>Konum Aktif</span>
+          </motion.div>
+        )}
+
+        {/* Firebase devrede olana kadar sadece görsel buton */}
+        <button onClick={handleGoogle} disabled={authLoading}
+          style={{ background:"rgba(212,175,55,0.06)", border:`1px solid rgba(212,175,55,0.28)`,
+            borderRadius:3, padding:"6px 14px", color:C.gold,
+            cursor:"pointer", fontSize:10,
+            letterSpacing:"0.1em", fontFamily:C.sans,
+            display:"flex", alignItems:"center", gap:6 }}>
+          <span style={{ fontSize:11, opacity:0.7 }}>G</span>
+          Üye Ol
+        </button>
+
+        <button onClick={onAdmin}
+          style={{ background:"none", border:`1px solid rgba(212,175,55,0.28)`,
+            borderRadius:3, padding:"6px 14px", color:"rgba(212,175,55,0.8)",
+            cursor:"pointer", fontSize:10, letterSpacing:"0.1em", fontFamily:C.sans }}>
+          YÖNETİM
+        </button>
+      </div>
+    </motion.header>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HERO ARAMA  "Ne ar1yorsun Kadir?" + BUL
+   (Image 3 / 7 birebir)
+══════════════════════════════════════════════════════════════════ */
+function HeroArama({ session, googleUser, aramaVal, onAramaChange, onAramaGo }) {
+  const isim = googleUser?.isim?.split(" ")[0] || session?.isim;
+  const lang = session?.lang || "TR";
+
+  const sorular = {
+    TR: `Ne ar1yorsun${isim ? ` ${isim}` : ""}?`,
+    EN: `What are you looking for${isim ? `, ${isim}` : ""}?`,
+    RU: `'B> 2K 8I5B5${isim ? `, ${isim}` : ""}?`,
+    DE: `Was suchst du${isim ? `, ${isim}` : ""}?`,
+  };
+
+  return (
+    <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }}
+      transition={{ duration:0.7, ease:[0.22,1,0.36,1] }}
+      style={{
+        background:"linear-gradient(160deg,#0d0b18 0%,#11101c 50%,#0a0a0f 100%)",
+        borderBottom:"1px solid rgba(212,175,55,0.08)",
+        padding:"36px 20px 28px",
+        position:"relative",
+      }}>
+
+      {/* Üst dekor çizgisi */}
+      <div style={{ position:"absolute", top:0, left:0, right:0, height:2,
+        background:"linear-gradient(90deg,transparent,rgba(212,175,55,0.4) 25%,rgba(212,175,55,0.4) 75%,transparent)" }}/>
+
+      <div style={{ maxWidth:660, margin:"0 auto" }}>
+        <motion.h1 initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }}
+          transition={{ delay:0.12, duration:0.6 }}
+          style={{ fontFamily:C.serif, fontSize:isim ? 28 : 26, fontWeight:400,
+            color:"rgba(238,230,210,0.96)", letterSpacing:"0.01em",
+            lineHeight:1.25, margin:"0 0 20px" }}>
+          {sorular[lang] || sorular.TR}
+        </motion.h1>
+
+        <motion.div initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }}
+          transition={{ delay:0.22, duration:0.5 }}
+          style={{ display:"flex", gap:10, alignItems:"stretch" }}>
+
+          <div style={{ flex:1, position:"relative" }}>
+            <input
+              value={aramaVal}
+              onChange={e => onAramaChange(e.target.value)}
+              onKeyDown={e => e.key==="Enter" && onAramaGo()}
+              placeholder="Mekan, hizmet veya sanat..."
+              style={{ width:"100%", boxSizing:"border-box",
+                padding:"14px 40px 14px 16px",
+                background:"rgba(255,255,255,0.05)",
+                border:"1px solid rgba(212,175,55,0.22)",
+                borderRadius:4, color:"rgba(238,230,210,0.92)",
+                fontSize:15, fontFamily:C.serif, outline:"none",
+                letterSpacing:"0.01em" }}
+              onFocus={e => e.target.style.borderColor="rgba(212,175,55,0.5)"}
+              onBlur={e  => e.target.style.borderColor="rgba(212,175,55,0.22)"}
+            />
+            {aramaVal && (
+              <button onClick={() => onAramaChange("")}
+                style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)",
+                  background:"none", border:"none", color:C.muted,
+                  cursor:"pointer", fontSize:18, padding:0, lineHeight:1 }}>
+                ×
+              </button>
+            )}
+          </div>
+
+          <motion.button whileHover={{ scale:1.03 }} whileTap={{ scale:0.97 }}
+            onClick={onAramaGo}
+            style={{ height:"auto", padding:"0 22px",
+              background:`linear-gradient(135deg,${C.gold},#b8952a)`,
+              border:"none", borderRadius:4, color:"#0a0a0f",
+              fontFamily:C.sans, fontSize:12, fontWeight:700,
+              letterSpacing:"0.14em", cursor:"pointer",
+              boxShadow:"0 2px 12px rgba(212,175,55,0.25)" }}>
+            BUL
+          </motion.button>
+        </motion.div>
+
+        <motion.p initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.4 }}
+          style={{ fontSize:9, color:"rgba(168,155,128,0.38)",
+            letterSpacing:"0.12em", margin:"10px 0 0", fontFamily:C.sans }}>
+          {session?.coords
+            ? "=� Konumunuz aktif � En yak1n Nar Se�imi �nce"
+            : "📍 Konum izni verilmedi · Editoryal sıralama aktif"}
+        </motion.p>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   VİTRİN SAYFASI — Tüm bileşenlerin orchestratörü
+══════════════════════════════════════════════════════════════════ */
+function VitrinPage({ session, googleUser, onAdmin, onBireyselIlanFormuAc, bireyselIlanlar = [] }) {
+  const [arama,     setArama]     = useState("");
+  const [aramaSent, setAramaSent] = useState("");
+
+  useEffect(() => { setAramaSent(arama); }, [arama]);
+
+  return (
+    <motion.div key="vitrin"
+      initial={{ opacity:0 }} animate={{ opacity:1 }}
+      exit={{ opacity:0 }} transition={{ duration:0.35 }}
+      style={{ minHeight:"100vh", background:C.bg }}>
+
+      {/* 1 — Header (sticky) */}
+      <NarHeader session={session} googleUser={googleUser} onAdmin={onAdmin}/>
+
+      {/* 2 — Hero Arama */}
+      <HeroArama
+        session={session} googleUser={googleUser}
+        aramaVal={arama} onAramaChange={setArama} onAramaGo={() => setAramaSent(arama)}
+      />
+
+      {/* 3 — KategoriVitrin */}
+      <div style={{ padding:"0 16px" }}>
+        <KategoriVitrin
+          coords={session?.coords ?? null}
+          lang={session?.lang ?? "TR"}
+          globalArama={aramaSent}
+          onBireyselIlanFormuAc={onBireyselIlanFormuAc}
+          bireyselIlanlar={bireyselIlanlar}
+        />
+      </div>
+
+      {/* 4 — TimeSuggestion: "ÖĞLE YAKLAŞIYOR" atmosfer kartı */}
+      <TimeSuggestion />
+
+      {/* 5 — Dev sıfırlama */}
+      <div style={{ textAlign:"center", padding:"24px 0 32px" }}>
+        <button onClick={() => { clearSession(); window.location.reload(); }}
+          style={{ background:"none", border:"none", color:C.muted,
+            fontSize:8.5, cursor:"pointer", opacity:0.3, letterSpacing:"0.1em" }}>
+          ↺ Onboarding'i Sıfırla
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ANA BİLEŞEN
+══════════════════════════════════════════════════════════════════ */
+export default function App() {
+  const [view,        setView]        = useState("BOOT");
+  const [session,     setSession]     = useState(null);
+  const [googleUser,  setGoogleUser]  = useState(null);
+  const [ilanKategori, setIlanKategori] = useState(null);
+  const [bireyselIlanlar, setBireyselIlanlar] = useState([]); // Bireysel ilan formundan gelen veriler → Şehir Nabzı 4. sekme
+
+  // Firebase Auth şimdilik devre dışı (Görsel olarak duruyor)
+  /*
+  useEffect(() => {
+    const unsub = onAuthChange((fbUser) => {
+      setGoogleUser(fbUser ? {
+        uid:  fbUser.uid,
+        isim: fbUser.displayName || "Kullanıcı",
+        email:fbUser.email,
+        foto: fbUser.photoURL,
+      } : null);
+    });
+    return () => unsub();
+  }, []);
+  */
+
+  // İlk yükleme
+  useEffect(() => {
+    const saved = loadSession();
+    if (saved) { setSession(saved); setView("VITRIN"); }
+    else       { setView("ONBOARDING"); }
+  }, []);
+
+  const handleOnboardingDone = (data) => {
+    saveSession(data);
+    setSession(data);
+    setView("VITRIN");
+  };
+
+  if (view === "BOOT") return null;
+
+  return (
+    <div style={{ background:C.bg, minHeight:"100vh", color:C.text }}>
+      <AnimatePresence mode="wait">
+        {view === "ONBOARDING" && (
+          <OnboardingScreen key="ob" onDone={handleOnboardingDone}/>
+        )}
+
+        {view === "VITRIN" && (
+          <VitrinPage key="vt"
+            session={session}
+            googleUser={googleUser}
+            onAdmin={() => setView("AUTH")}
+            onBireyselIlanFormuAc={(k) => { setIlanKategori(k); setView("BIREYSEL_ILAN_FORMU"); }}
+            bireyselIlanlar={bireyselIlanlar}
+          />
+        )}
+
+        {view === "BIREYSEL_ILAN_FORMU" && ilanKategori && (
+          <BireyselIlanFormu
+            key="bireysel-ilan"
+            kategori={ilanKategori}
+            onBasarili={() => setView("VITRIN")}
+            onKapat={() => setView("VITRIN")}
+            onIlanKaydet={(ilan) => setBireyselIlanlar((prev) => [...(Array.isArray(prev) ? prev : []), ilan])}
+          />
+        )}
+
+        {/* --- YÖNETİM PANELLERİ EKLENTİSİ --- */}
+        {view === "AUTH" && (
+          <AuthGateway key="auth"
+            onClose={() => setView("VITRIN")}
+            onAuth={(s) => {
+              if (s.rol === "MASTER")    setView("MASTER_PANEL");
+              if (s.rol === "DT_ADMIN")  setView("DT_PANEL");
+              if (s.rol === "KURUMSAL") setView("KURUMSAL_PANEL");
+            }}
+          />
+        )}
+
+        {view === "KURUMSAL_PANEL" && (
+          <KurumsalPanel key="kurumsal" onCikis={() => setView("VITRIN")} />
+        )}
+
+        {view === "DT_PANEL" && (
+          <TheaterAdminPanel key="dt" onCikis={() => setView("VITRIN")}/>
+        )}
+
+        {view === "MASTER_PANEL" && (
+          <MasterPanel key="mp"
+            session={session}
+            onCikis={() => setView("VITRIN")}/>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

@@ -20,9 +20,9 @@ export const MOCK_FESTIVAL = {
   },
   cta: null,
   images: [
-    { url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1200&q=90', alt: 'Cam Piramit etkinlik alanı' },
+    { url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1200&q=90', alt: 'Cam Piramit etkinlik alan1' },
     { url: 'https://images.unsplash.com/photo-1577234286642-fc512a5f8f11?w=1200&q=90', alt: 'Nar Festivali' },
-    { url: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1200&q=90', alt: 'Zülfü Livaneli konser sahnesi' },
+    { url: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1200&q=90', alt: 'Z�lf� Livaneli konser sahnesi' },
   ],
 };
 

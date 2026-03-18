@@ -160,7 +160,7 @@ function defaultByCategory() {
  * V12.5 Hizmet CTA: meta ile action_type, venue category, venue_id, timestamp kaydedilir.
  * @param {string} businessIdOrSource - İşletme id veya lead kaynağı (venue_id)
  * @param {'YEME_ICME'|'HIZMET_USTA'|'OZEL_DENEYIM'} category
- * @param {{ action_type?: string, category?: string, venue_id?: string, timestamp?: string }} [meta] - V12.5 call lead için
+ * @param {{ action_type?: string, category?: string, venue_id?: string, timestamp?: string }} [meta] - V12.5 call lead i�in
  */
 export function trackLead(businessIdOrSource, category = 'YEME_ICME', meta = null) {
   const cat = LEAD_CATEGORIES[category] ? category : 'YEME_ICME';

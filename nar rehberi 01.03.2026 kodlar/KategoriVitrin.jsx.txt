@@ -1,0 +1,556 @@
+/**
+ * ╔══════════════════════════════════════════════════════════════════╗
+ * ║  NAR REHBERİ — KATEGORİ VİTRİN v1                              ║
+ * ║  KategoriVitrin.jsx                                             ║
+ * ║                                                                  ║
+ * ║  4 Lüks Kart  →  aiService filtre  →  PLATINUM+GOLD listesi   ║
+ * ║  PayTR Güvenli Ödeme  ·  NetGSM 0850 302 79 46                ║
+ * ╚══════════════════════════════════════════════════════════════════╝
+ */
+
+import { useState, useEffect, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { VENUES } from "../services/aiService.js";
+import { KahinPanel } from "./KahinCityPulse.jsx";
+import { YasalZirh } from "./BireyselIlanFormu.jsx";
+
+/* ─── MEKAN ARAMA SONUÇ KARTI ───────────────────────────────────── */
+function VenueSearchCard({ venue, coords }) {
+  const [open, setOpen] = useState(false);
+  const dist = (coords && venue.lat && venue.lng)
+    ? (() => {
+        const R=6371, dLat=(venue.lat-coords.lat)*Math.PI/180,
+          dLng=(venue.lng-coords.lng)*Math.PI/180;
+        const a=Math.sin(dLat/2)**2+Math.cos(coords.lat*Math.PI/180)
+          *Math.cos(venue.lat*Math.PI/180)*Math.sin(dLng/2)**2;
+        return (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
+      })()
+    : null;
+  const isim = venue.ad || venue.isim;
+  const tier = venue.uyelik || venue.tier;
+  const tierColor = tier==="PLATINUM"?"#a8c4e8":tier==="GOLD"?C.gold:tier==="SILVER"?"#aaa":"rgba(168,155,128,0.5)";
+
+  return (
+    <motion.div initial={{ opacity:0, y:4 }} animate={{ opacity:1, y:0 }}
+      onClick={() => setOpen(o => !o)}
+      style={{ padding:"12px 14px", marginBottom:6, cursor:"pointer",
+        background:"rgba(255,255,255,0.02)", borderRadius:3,
+        border:`1px solid rgba(212,175,55,0.09)`,
+        borderLeft:`2px solid ${tierColor}` }}>
+      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8 }}>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:7, flexWrap:"wrap", marginBottom:3 }}>
+            <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:14, color:C.text, fontWeight:600 }}>
+              {isim}
+            </span>
+            <span style={{ fontSize:8, padding:"2px 7px", borderRadius:20,
+              background:`rgba(${tier==="PLATINUM"?"168,196,232":tier==="GOLD"?"212,175,55":"128,128,128"},0.12)`,
+              border:`1px solid ${tierColor}40`, color:tierColor, letterSpacing:"0.08em" }}>
+              {tier}
+            </span>
+            {venue.guvenli && (
+              <span style={{ fontSize:8, padding:"2px 7px", borderRadius:20,
+                background:"rgba(76,175,77,0.08)", border:"1px solid rgba(76,175,77,0.25)",
+                color:C.ok, letterSpacing:"0.06em" }}>🛡 Güvenli</span>
+            )}
+          </div>
+          <p style={{ fontSize:10, color:C.muted, margin:"0 0 4px", lineHeight:1.4 }}>
+            {venue.adres?.substring(0,70)}{venue.adres?.length>70?"...":""}
+          </p>
+          <div style={{ display:"flex", gap:14, alignItems:"center" }}>
+            {dist && <span style={{ fontSize:10, color:C.ok }}>◉ {dist} km</span>}
+            {(venue.nar_secimi_skoru != null || venue.puan) && <span style={{ fontSize:10, color:"rgba(212,175,55,0.7)" }}> {venue.nar_secimi_skoru ?? venue.puan}</span>}
+            {venue.mahalle && <span style={{ fontSize:9, color:C.muted }}>{venue.mahalle}</span>}
+          </div>
+        </div>
+        <span style={{ fontSize:9, color:C.muted, flexShrink:0, marginTop:2 }}>
+          {open ? "�" : "�"}
+        </span>
+      </div>
+      {open && (venue.telefon || venue.tel) && (
+        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }}
+          style={{ marginTop:10, display:"flex", gap:8, flexWrap:"wrap" }}
+          onClick={e => e.stopPropagation()}>
+          {(venue.telefon || venue.tel) && (
+            <a href={`tel:${(venue.telefon||venue.tel).replace(/\s/g,"")}`}
+              style={{ fontSize:10, color:C.gold, padding:"5px 12px",
+                background:"rgba(212,175,55,0.08)", border:`1px solid ${C.goldB}`,
+                borderRadius:3, textDecoration:"none", letterSpacing:"0.05em" }}>
+              📞 {venue.telefon || venue.tel}
+            </a>
+          )}
+          {venue.lat && venue.lng && (
+            <a href={`https://www.google.com/maps/search/${encodeURIComponent((isim||"")+" Antalya")}`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ fontSize:10, color:"#4285F4", padding:"5px 12px",
+                background:"rgba(66,133,244,0.08)", border:"1px solid rgba(66,133,244,0.25)",
+                borderRadius:3, textDecoration:"none" }}>
+              🗺 Yol Tarifi
+            </a>
+          )}
+        </motion.div>
+      )}
+    </motion.div>
+  );
+}
+
+/* ─── TEMA ──────────────────────────────────────────────────────── */
+const C = {
+  bg:      "#0a0a0f",
+  s2:      "#111118",
+  s3:      "#17171e",
+  s4:      "#1d1d26",
+  gold:    "#D4AF37",
+  goldD:   "rgba(212,175,55,0.10)",
+  goldB:   "rgba(212,175,55,0.18)",
+  text:    "rgba(238,230,210,0.92)",
+  muted:   "rgba(168,155,128,0.50)",
+  ok:      "#4caf7d",
+  danger:  "#c0604a",
+  plat:    "#a8c4e8",
+  netgsm:  "0850 302 79 46",
+};
+
+// ═══════════════════════════════════════════════════════════════════
+//  KAHİN ŞEHİR NABZI — KategoriVitrin'e entegre
+// ═══════════════════════════════════════════════════════════════════
+const GOLD       = "#D4AF37";
+const GOLD_DIM   = "rgba(212,175,55,0.65)";
+const GOLD_FAINT = "rgba(212,175,55,0.10)";
+const TEXT       = "rgba(240,234,218,0.90)";
+const TEXT_DIM   = "rgba(240,234,218,0.45)";
+const CARD_BG    = "rgba(255,255,255,0.025)";
+const CARD_BOR   = "rgba(212,175,55,0.09)";
+const SERIF      = "'Cormorant Garamond','Garamond','Times New Roman',serif";
+const SANS       = "'Jost','Segoe UI',sans-serif";
+const PANEL_BG   = "linear-gradient(160deg,#080610 0%,#0e0c1a 45%,#12101f 100%)";
+const NETGSM     = "0850 302 79 46";
+
+const EVENTS = [
+  { id:"t1", kat:"Tiyatro",  icon:"🎭", isim:"Othello",                          yer:"Haşim İşcan Kültür Merkezi",    tarih:"Her Cuma–Cumartesi", saat:"20:30", tel:"0242 243 60 26", maps:"Haşim İşcan Kültür Merkezi Antalya",    not:"Kıskançlığın trajedisi — bilet sınırlı.",           ay:[1,2,3,11,12] },
+  { id:"t2", kat:"Tiyatro",  icon:"🎭", isim:"Bekleme Odası",                    yer:"Devlet Tiyatrosu Ana Sahne",    tarih:"Çarşamba–Perşembe",  saat:"20:00", tel:"0242 243 60 26", maps:"Antalya Devlet Tiyatrosu",              not:"Günümüz insanının aynası.",                         ay:[1,2,3,10,11,12] },
+  { id:"t3", kat:"Tiyatro",  icon:"🎭", isim:"Medea",                            yer:"Atatürk Kültür Merkezi",        tarih:"Cumartesi",          saat:"20:30", tel:"0242 238 54 00", maps:"Atatürk Kültür Merkezi Antalya",        not:"Sevginin en karanlık yüzü.",                        ay:[2,3,11,12] },
+  { id:"k1", kat:"Konser",   icon:"🎵", isim:"Boğaziçi Caz Festivali – Antalya", yer:"Karaalioğlu Parkı Açık Sahne", tarih:"15–18 Mayıs",        saat:"20:30", tel:"0242 249 17 47", maps:"Karaalioğlu Parkı Antalya",             not:"Ücretsiz giriş. Açık hava.",                        ay:[5] },
+  { id:"k2", kat:"Konser",   icon:"🎸", isim:"Antalya Müzik Festivali",          yer:"Aspendos Antik Tiyatro",        tarih:"Temmuz",             saat:"21:00", tel:"0242 735 10 34", maps:"Aspendos Antik Tiyatro Antalya",        not:"Antik taşların altında müzik.",                     ay:[7] },
+  { id:"k3", kat:"Konser",   icon:"🎻", isim:"Devlet Senfoni Orkestrası",        yer:"Atatürk Kültür Merkezi",        tarih:"Her ay 1. Cumartesi",saat:"20:00", tel:"0242 238 54 00", maps:"Atatürk Kültür Merkezi Antalya",        not:"Klasik müziğin başkenti.",                          ay:[1,2,3,4,5,10,11,12] },
+  { id:"k4", kat:"Konser",   icon:"🥁", isim:"Antalya Caz Günleri",              yer:"Kaleiçi Yat Limanı",            tarih:"Haziran",            saat:"20:00", tel:"0242 249 17 47", maps:"Kaleiçi Yat Limanı Antalya",            not:"Tekne manzaralı açık hava sahnesinde caz.",         ay:[6] },
+  { id:"f1", kat:"Fuar",     icon:"📚", isim:"Antalya Kitap Fuarı",              yer:"Cam Piramit Kültür Merkezi",    tarih:"Ocak sonu",          saat:"10:00–20:00", tel:"0242 249 17 47", maps:"Cam Piramit Kültür Merkezi Antalya", not:"100+ yayınevi, imza günleri.",                   ay:[1] },
+  { id:"f2", kat:"Fuar",     icon:"🏡", isim:"Yörex Yöresel Ürünler Fuarı",     yer:"Antalya Fuar Merkezi",          tarih:"Mart",               saat:"10:00–19:00", tel:"0242 316 00 00", maps:"Antalya Fuar Merkezi",               not:"Türkiye'nin en büyük yöresel ürün fuarı.",       ay:[3] },
+  { id:"fe1",kat:"Festival", icon:"🎬", isim:"Altın Portakal Film Festivali",    yer:"Atatürk Kültür Merkezi",        tarih:"Ekim",               saat:"Çeşitli",     tel:"0242 238 54 00", maps:"Atatürk Kültür Merkezi Antalya",    not:"Türkiye'nin en prestijli film festivali.",       ay:[10] },
+  { id:"fe2",kat:"Festival", icon:"🍊", isim:"Uluslararası Narenciye Festivali", yer:"Kepez Atatürk Meydanı",         tarih:"Ocak",               saat:"Tüm gün",     tel:"0242 311 11 11", maps:"Kepez Atatürk Meydanı Antalya",     not:"Şehrin rengi ve kokusu.",                        ay:[1] },
+  { id:"fe3",kat:"Festival", icon:"🌊", isim:"Su Sporları Festivali",            yer:"Konyaaltı Sahili",              tarih:"Temmuz",             saat:"09:00–18:00", tel:"0242 249 17 47", maps:"Konyaaltı Sahili Antalya",          not:"Jet ski, sörf, parasailing gösterileri.",        ay:[7] },
+  { id:"fe4",kat:"Festival", icon:"🎪", isim:"Uluslararası Opera Festivali",     yer:"Aspendos Antik Tiyatro",        tarih:"Eylül",              saat:"21:00",       tel:"0242 735 10 34", maps:"Aspendos Antik Tiyatro Antalya",    not:"Dünyanın en güzel sahnelerinden birinde opera.", ay:[9] },
+  { id:"s1", kat:"Spor",     icon:"🏃", isim:"Antalya Maratonu",                 yer:"Konyaaltı – Falezler",          tarih:"Mart",               saat:"08:00",       tel:"0242 249 17 47", maps:"Konyaaltı Sahili Antalya",          not:"Deniz manzaralı 42km.",                          ay:[3] },
+  { id:"s2", kat:"Spor",     icon:"⛷️", isim:"Saklıkent Kayak Sezonu",           yer:"Saklıkent Kayak Merkezi",       tarih:"Aralık–Mart",        saat:"09:00–17:00", tel:"0242 744 30 50", maps:"Saklıkent Kayak Merkezi Antalya",   not:"Denize 45dk, karda 1 gün.",                      ay:[12,1,2,3] },
+  { id:"s3", kat:"Spor",     icon:"🚴", isim:"Likya Yolu Bisiklet Turu",         yer:"Kalkan – Antalya",              tarih:"Ekim–Kasım",         saat:"Çok günlü",   tel:"0242 249 17 47", maps:"Likya Yolu Antalya",                not:"Türkiye'nin en güzel sahil bisiklet rotası.",    ay:[10,11] },
+];
+
+const SERVICES = [
+  { id:"h1", kat:"Hastane",   icon:"🏥", isim:"Akdeniz Üni. Hastanesi – Acil",  tel:"0242 249 60 00", maps:"Akdeniz Üniversitesi Hastanesi Antalya acil",  acil:true,  renk:"#e05555" },
+  { id:"h2", kat:"Hastane",   icon:"🏥", isim:"Antalya Şehir Hastanesi – Acil", tel:"0242 276 50 00", maps:"Antalya Şehir Hastanesi acil",                 acil:true,  renk:"#e05555" },
+  { id:"h3", kat:"Hastane",   icon:"🏥", isim:"Eğitim & Araştırma Hastanesi",   tel:"0242 249 44 00", maps:"Antalya Eğitim Araştırma Hastanesi",           acil:false, renk:"#c04444" },
+  { id:"h4", kat:"Hastane",   icon:"🏥", isim:"Özel Medline Hastanesi",          tel:"0242 314 44 44", maps:"Medline Hastanesi Antalya",                    acil:false, renk:"#c04444" },
+  { id:"e1", kat:"Eczane",    icon:"💊", isim:"Nöbetçi Eczane – Resmi Liste",   tel:"182",            maps:"nöbetçi eczane antalya",                       acil:true,  renk:"#44aa66" },
+  { id:"v1", kat:"Veteriner", icon:"🐾", isim:"Antalya Veteriner Acil Klinik",  tel:"0242 502 05 05", maps:"acil veteriner antalya 7/24",                  acil:true,  renk:"#8877cc" },
+  { id:"v2", kat:"Veteriner", icon:"🐾", isim:"Akdeniz Veteriner Kliniği",      tel:"0242 311 22 33", maps:"veteriner kliniği antalya",                    acil:false, renk:"#8877cc" },
+  { id:"c1", kat:"Yol Yardım",icon:"🚗", isim:"7/24 Oto Çekici Antalya",        tel:"0542 777 88 99", maps:"oto çekici antalya 7/24",                      acil:true,  renk:"#cc8833" },
+  { id:"c2", kat:"Yol Yardım",icon:"🔧", isim:"Lastik & Yol Yardım",            tel:"0532 444 55 66", maps:"yol yardım lastik antalya",                    acil:false, renk:"#cc8833" },
+  { id:"ch1",kat:"Çilingir",  icon:"🔑", isim:"7/24 Çilingir Antalya",          tel:"0544 333 22 11", maps:"çilingir antalya 7/24 gece",                   acil:true,  renk:"#d4af37" },
+];
+
+const COMMERCIAL_CATS = [
+  { id:"saglik", icon:"🏥", label:"Sağlık & Klinik", renk:"#e05555", ilanVar: false, sorular:[{ q:"Özel hastane bilgisi almak istiyorum" }], kahin_prompt:"Sen Nar Rehberi asistanısın. 2 cümle bilgi ver. Sonra: 0850 302 79 46'yı arayabilirsiniz.", cta:"Klinik Listesi →" },
+  { id:"hukuk", icon:"⚖️", label:"Hukuk & Avukatlık", renk:"#4a8fd4", ilanVar: false, sorular:[{ q:"Boşanma hukuku hakkında bilgi" }], kahin_prompt:"Sen Nar Rehberi asistanısın. 2 cümle bilgi ver. 0850 302 79 46.", cta:"Avukat Bilgisi →" },
+];
+
+const getMonth = () => new Date().getMonth() + 1;
+const getHour = () => new Date().getHours();
+const mapsUrl = (q) => `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
+const callUrl = (t) => `tel:${t.replace(/\s/g,"")}`;
+const waUrl = (t,m) => `https://wa.me/90${t.replace(/\D/g,"")}?text=${encodeURIComponent(m||"Merhaba, Nar Rehberi'nden bilgi almak istiyorum.")}`;
+const currentEvts = () => { const m=getMonth(); return EVENTS.filter(e=>e.ay.includes(m)); };
+const months = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+
+function hexToRgb(h) {
+  if (!h||h.length<7) return "212,175,55";
+  return `${parseInt(h.slice(1,3),16)},${parseInt(h.slice(3,5),16)},${parseInt(h.slice(5,7),16)}`;
+}
+function btnStyle(color,small=false) {
+  return { display:"inline-flex",alignItems:"center",gap:"4px", padding:small?"4px 9px":"5px 11px",borderRadius:"3px", background:`rgba(${hexToRgb(color)},0.10)`, border:`1px solid ${color}45`, color,fontSize:small?"9px":"10px",fontFamily:SANS, letterSpacing:"0.05em",textDecoration:"none", cursor:"pointer",whiteSpace:"nowrap" };
+}
+const getTimeTheme = (h) => {
+  if (h>=5  && h<9 ) return { label:"Sabah",  gold:GOLD, dim:GOLD_DIM };
+  if (h>=9  && h<13) return { label:"Öğle",   gold:GOLD, dim:GOLD_DIM };
+  if (h>=13 && h<18) return { label:"İkindi", gold:GOLD, dim:GOLD_DIM };
+  if (h>=18 && h<22) return { label:"Akşam",  gold:"#e8914a",  dim:"rgba(232,145,74,0.65)" };
+  return { label:"Gece",   gold:"#9b8ec4",  dim:"rgba(155,142,196,0.65)" };
+};
+
+function KahinTeaser({ onOpen }) {
+  const [pulse, setPulse] = useState(false);
+  const [tickIdx, setTickIdx] = useState(0);
+  const h = getHour();
+  const tt = getTimeTheme(h);
+  const evts = currentEvts();
+  useEffect(()=>{ const iv1 = setInterval(()=>setPulse(p=>!p), 3500); const iv2 = setInterval(()=>setTickIdx(p=>p+1), 4200); return ()=>{ clearInterval(iv1); clearInterval(iv2); }; },[]);
+  const current = evts.length>0 ? evts[tickIdx%evts.length] : null;
+  return (
+    <motion.div onClick={onOpen}
+      initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}}
+      style={{ position:"relative",width:"100%",padding:"10px 20px", background:"linear-gradient(135deg,rgba(212,175,55,0.055) 0%,rgba(10,10,15,0.98) 65%)", borderBottom:`1px solid rgba(212,175,55,0.13)`, cursor:"pointer", display:"flex",alignItems:"center",justifyContent:"space-between",gap:"16px" }}>
+      <div style={{display:"flex",alignItems:"center",gap:"13px",flex:1,minWidth:0}}>
+        <div style={{position:"relative",flexShrink:0,width:"10px",height:"10px"}}>
+          <div style={{width:"10px",height:"10px",borderRadius:"50%",background:tt.gold}}/>
+          <motion.div animate={{scale:pulse?3.2:1,opacity:pulse?0:0.45}} transition={{duration:1.5}} style={{position:"absolute",inset:"-5px",borderRadius:"50%", border:`1px solid ${tt.gold}`,pointerEvents:"none"}}/>
+        </div>
+        <div style={{minWidth:0,flex:1}}>
+          <span style={{fontFamily:SANS,fontSize:"9px",letterSpacing:"0.22em", textTransform:"uppercase",color:tt.dim,display:"block",marginBottom:"4px"}}>ŞEHİR NABZI · {tt.label}</span>
+          <div style={{overflow:"hidden",height:"24px"}}>
+            <AnimatePresence mode="wait">
+              <motion.span key={tickIdx} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} transition={{duration:0.45}} style={{fontFamily:SERIF,fontSize:"16px",color:TEXT, display:"block",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",lineHeight:"24px"}}>
+                {current ? `${current.icon}  ${current.isim}  �  ${current.tarih}  �  ${current.yer}` : "=.  Antalya _ehir takvimi haz1rlan1yor..."}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+      <span style={{fontFamily:SANS,fontSize:"9px",color:GOLD_DIM,letterSpacing:"0.18em",textTransform:"uppercase"}}>Keşfet ›</span>
+    </motion.div>
+  );
+}
+
+/* ─── KATEGORİ TANIMLARI ────────────────────────────────────────── */
+const CATS = [
+  { key:"SANAT_KULTUR", title:"Sahne & Sanat", sub:"Devlet Tiyatrosu · Sergi · Kültür", icon:"🎭", accent:"#4caf7d", desc:"Antalya'nın sanat dünyasının editoryal seçkisi.", tip:"venue" },
+  { key:"GURME_DURAK", title:"Gurme Duraklar", sub:"Specialty Coffee · Atölye · Lezzet", icon:"☕", accent:"#c07840", desc:"Editoryal lezzet noktaları.", tip:"venue" },
+  { key:"USTA_HIZMET", title:"Usta / Hizmet", sub:"Çilingir · Oto · Tesisat · 7/24", icon:"🔧", accent:"#4a8fd4", desc:"Şehrin güvenilir usta ağı.", tip:"venue" },
+  { key:"GECE_HAYATI", title:"Gece Hayatı", sub:"Kokteyl · Rooftop · Club · Bar", icon:"🌙", accent:"#a070d0", desc:"Seçkin çıkış noktaları.", tip:"venue" },
+  { key:"EMLAK_ILAN", title:"Emlak İlanları", sub:"Kiralık · Satılık · Konut", icon:"🏢", accent:"#4a9abe", desc:"Kiralık veya satılık mülk.", tip:"ilan", ilanTipleri:["Kiralık Daire","Satılık Daire","Kiralık Villa","Satılık Villa"], waMsg:"Merhaba, Nar Rehberi Emlak İlanı vermek istiyorum." },
+  { key:"ARAC_ILAN", title:"Araç İlanları", sub:"Satılık · Kiralık · Galeri", icon:"🚗", accent:"#cc8833", desc:"Sıfır veya ikinci el araç.", tip:"ilan", ilanTipleri:["Satılık Araç","Kiralık Araç","Motor"], waMsg:"Merhaba, Nar Rehberi Araç İlanı vermek istiyorum." },
+];
+
+// Vitrin buton key → VENUES.kategori (case-sensitive, trim). Gurme & Gece → GASTRONOMI
+const KAT_KEY_TO_VENUE = {
+  GURME_DURAK: "GASTRONOMI",
+  GECE_HAYATI: "GASTRONOMI",
+};
+
+function km(lat1, lng1, lat2, lng2) {
+  const R = 6371, r = Math.PI / 180;
+  const dLa = (lat2 - lat1) * r, dLo = (lng2 - lng1) * r;
+  const a = Math.sin(dLa/2)**2 + Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(dLo/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function filterVenues(catKey, coords) {
+  const dataKey = (KAT_KEY_TO_VENUE[String(catKey).trim()] ?? String(catKey || "").trim()).trim();
+  const list = Array.isArray(VENUES) ? VENUES : (VENUES && typeof VENUES === "object" ? Object.values(VENUES).flat() : []);
+  return list
+    .filter(v => v.aktif && (String(v.kategori || "").trim() === dataKey) && (v.uyelik === "PLATINUM" || v.uyelik === "GOLD"))
+    .map(v => ({ ...v, _km: coords ? km(coords.lat, coords.lng, v.lat, v.lng) : null }))
+    .sort((a, b) => {
+      if (a.uyelik !== b.uyelik) return a.uyelik === "PLATINUM" ? -1 : 1;
+      if (a._km != null && b._km != null) return a._km - b._km;
+      return (b.nar_secimi_skoru || 0) - (a.nar_secimi_skoru || 0);
+    });
+}
+
+const NETGSM_WA = "08503027946";
+
+const MAX_ILAN_PHOTOS = 6;
+
+function IlanCard({ cat, idx, onBireyselIlanFormuAc }) {
+  const [open, setOpen] = useState(false);
+  const [ilanTip, setIlanTip] = useState("");
+  const [form, setForm] = useState({ baslik:"", aciklama:"", fiyat:"", tel:"" });
+  const [photos, setPhotos] = useState([]); // object URL'ler (max 6)
+  const [galleryIdx, setGalleryIdx] = useState(0);
+  const [sent, setSent] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const isEmlakArac = cat.key === "EMLAK_ILAN" || cat.key === "ARAC_ILAN";
+  const bireyselFormAcilsin = isEmlakArac && typeof onBireyselIlanFormuAc === "function";
+
+  const onPhotoChange = useCallback((e) => {
+    const files = Array.from(e.target.files || []).slice(0, MAX_ILAN_PHOTOS);
+    setPhotos(prev => {
+      prev.forEach(u => { try { URL.revokeObjectURL(u); } catch (_) {} });
+      return files.map(f => URL.createObjectURL(f));
+    });
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
+
+  useEffect(() => () => {
+    photos.forEach(u => { try { URL.revokeObjectURL(u); } catch (_) {} });
+  }, [photos]);
+
+  const gonder = () => {
+    const msg = `=. NAR REHBER0  ${cat.title.toUpperCase()}\n\nT�r: ${ilanTip || (cat.ilanTipleri&&cat.ilanTipleri[0])}\nBa_l1k: ${form.baslik||"-"}\nA�1klama: ${form.aciklama||"-"}\nFiyat: ${form.fiyat||"-"}\n0leti_im: ${form.tel||"-"}${photos.length ? `\n=� ${photos.length} fotoraf eklendi.` : ""}`;
+    window.open(`https://wa.me/90${NETGSM_WA}?text=${encodeURIComponent(msg)}`, "_blank");
+    setSent(true);
+  };
+  return (
+    <motion.div initial={{ opacity:0, y:22 }} animate={{ opacity:1, y:0 }} transition={{ delay: idx*0.09, duration:0.48 }} style={{ marginBottom:10 }}>
+      <motion.button onClick={()=>setOpen(o=>!o)} whileHover={{ x:3 }} whileTap={{ scale:0.99 }}
+        style={{ width:"100%", textAlign:"left", padding:"17px 18px", background: open ? `linear-gradient(135deg,${cat.accent}18,${cat.accent}06)` : C.s2, border:`1px solid ${open ? cat.accent+"44" : C.goldB}`, borderRadius: open ? "6px 6px 0 0" : 6, cursor:"pointer", display:"flex", alignItems:"center", gap:15 }}>
+        <div style={{ width:50, height:50, flexShrink:0, borderRadius:4, background:cat.accent+"15", border:`1px solid ${cat.accent}30`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:24 }}>{cat.icon}</div>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
+            <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, color:C.text, fontWeight:600 }}>{cat.title}</span>
+            <span style={{ fontSize:8, padding:"2px 8px", borderRadius:10, background:`${cat.accent}18`, border:`1px solid ${cat.accent}35`, color:cat.accent, letterSpacing:"0.14em" }}>İLAN VER</span>
+          </div>
+          <span style={{ fontSize:11, color:C.muted }}>{cat.sub}</span>
+        </div>
+        <motion.span animate={{ rotate:open?90:0 }} style={{ fontSize:18, flexShrink:0, color:open?cat.accent:C.muted }}>:</motion.span>
+      </motion.button>
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ opacity:0, height:0 }} animate={{ opacity:1, height:"auto" }} exit={{ opacity:0, height:0 }} transition={{ duration:0.32 }} style={{ background:C.bg, border:`1px solid ${cat.accent}30`, borderTop:"none", borderRadius:"0 0 6px 6px", overflow:"hidden" }}>
+            <div style={{ padding:"16px 14px" }}>
+              {bireyselFormAcilsin ? (
+                <>
+                  <p style={{ fontSize:11, color:C.muted, lineHeight:1.65, marginBottom:14 }}>{cat.desc}</p>
+                  <button type="button" onClick={() => onBireyselIlanFormuAc(cat.key)} style={{ width:"100%", padding:12, borderRadius:6, border:`1px solid ${cat.accent}55`, background:`linear-gradient(135deg,${cat.accent}28,${cat.accent}12)`, color:cat.accent, fontSize:11, fontWeight:700, letterSpacing:"0.12em", cursor:"pointer" }}>İlan Formunu Aç</button>
+                  <div style={{ marginTop:14 }}><YasalZirh /></div>
+                </>
+              ) : (
+                <>
+                  <p style={{ fontSize:11, color:C.muted, lineHeight:1.65, marginBottom:14 }}>{cat.desc}</p>
+                  {cat.ilanTipleri && cat.ilanTipleri.map(t=>(<button key={t} onClick={()=>setIlanTip(t)} style={{ padding:"4px 10px", borderRadius:20, border:"none", cursor:"pointer", fontSize:9, marginRight:6, marginBottom:8, background: ilanTip===t ? `${cat.accent}22` : "rgba(255,255,255,0.04)", border: ilanTip===t ? `1px solid ${cat.accent}55` : "1px solid rgba(212,175,55,0.12)", color: ilanTip===t ? cat.accent : C.muted }}>{t}</button>))}
+              {["baslik","aciklama","fiyat","tel"].map(fk=>(
+                <div key={fk} style={{ marginBottom:10 }}>
+                  <label style={{ fontSize:8.5, letterSpacing:"0.12em", color:C.muted, textTransform:"uppercase", display:"block", marginBottom:4 }}>{fk==="baslik"?"0lan Ba_l11":fk==="aciklama"?"A�1klama":fk==="fiyat"?"Fiyat":"=� 0leti_im"}</label>
+                  {fk==="aciklama" ? <textarea rows={3} value={form[fk]||""} onChange={e=>setForm(p=>({...p,[fk]:e.target.value}))} placeholder="Konum, �zellikler..." style={{ width:"100%", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(212,175,55,0.15)", borderRadius:4, padding:"8px 10px", color:C.text, fontSize:11, boxSizing:"border-box", outline:"none" }}/> : <input value={form[fk]||""} onChange={e=>setForm(p=>({...p,[fk]:e.target.value}))} placeholder={fk==="tel"?"0532 xxx xx xx":""} style={{ width:"100%", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(212,175,55,0.15)", borderRadius:4, padding:"8px 10px", color:C.text, fontSize:11, boxSizing:"border-box", outline:"none" }}/>}
+                </div>
+              ))}
+              {isEmlakArac && (
+                <div style={{ marginBottom:12 }}>
+                  <label style={{ fontSize:8.5, letterSpacing:"0.12em", color:C.muted, textTransform:"uppercase", display:"block", marginBottom:6 }}>Fotoğraf Ekle (Maks. {MAX_ILAN_PHOTOS} Adet)</label>
+                  <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={onPhotoChange} style={{ display:"none" }} />
+                  <button type="button" onClick={()=>fileInputRef.current?.click()} disabled={photos.length>=MAX_ILAN_PHOTOS} style={{ padding:"8px 14px", borderRadius:4, border:`1px solid ${cat.accent}40`, background:cat.accent+"14", color:cat.accent, fontSize:10, cursor:photos.length>=MAX_ILAN_PHOTOS?"not-allowed":"pointer", letterSpacing:"0.08em" }}>=� {photos.length}/{MAX_ILAN_PHOTOS} Fotoraf Se�</button>
+                  {photos.length > 0 && (
+                    <div style={{ marginTop:10 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, overflow:"hidden", borderRadius:6, border:`1px solid ${C.goldB}`, background:"rgba(0,0,0,0.2)" }}>
+                        <button type="button" onClick={()=>setGalleryIdx(i=>i===0?photos.length-1:i-1)} style={{ flexShrink:0, width:36, height:56, border:"none", background:"rgba(255,255,255,0.06)", color:C.text, cursor:"pointer", fontSize:18 }}>9</button>
+                        <div style={{ flex:1, minHeight:80, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden" }}>
+                          <img src={photos[galleryIdx]} alt="" style={{ maxHeight:120, maxWidth:"100%", objectFit:"contain" }} />
+                        </div>
+                        <button type="button" onClick={()=>setGalleryIdx(i=>i>=photos.length-1?0:i+1)} style={{ flexShrink:0, width:36, height:56, border:"none", background:"rgba(255,255,255,0.06)", color:C.text, cursor:"pointer", fontSize:18 }}>:</button>
+                      </div>
+                      <div style={{ display:"flex", gap:4, marginTop:6, flexWrap:"wrap" }}>
+                        {photos.map((url, i)=>(
+                          <button key={url} type="button" onClick={()=>setGalleryIdx(i)} style={{ width:32, height:32, padding:0, borderRadius:4, border: galleryIdx===i ? `2px solid ${cat.accent}` : "1px solid rgba(255,255,255,0.15)", overflow:"hidden", background:"rgba(0,0,0,0.3)", cursor:"pointer" }}>
+                            <img src={url} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              <button onClick={gonder} disabled={!form.baslik||!form.tel} style={{ width:"100%", padding:10, borderRadius:4, border:"none", marginTop:4, cursor:(!form.baslik||!form.tel)?"not-allowed":"pointer", background:(!form.baslik||!form.tel)?"rgba(255,255,255,0.05)":`linear-gradient(135deg,${cat.accent}33,${cat.accent}18)`, border:`1px solid ${(!form.baslik||!form.tel)?C.goldB:cat.accent+"50"}`, color:(!form.baslik||!form.tel)?C.muted:C.text, fontSize:10, letterSpacing:"0.12em" }}>=� WhatsApp ile G�nder</button>
+              {sent && <p style={{ fontSize:10, color:C.ok, textAlign:"center", margin:"8px 0 0" }}>✓ WhatsApp hazırlandı.</p>}
+              <p style={{ fontSize:8.5, color:C.muted, textAlign:"center", marginTop:8 }}>Ücretli ilan için {C.netgsm}'yı arayın.</p>
+              <div style={{ marginTop:12 }}><YasalZirh /></div>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+function TrustBar() {
+  return (
+    <div style={{ display:"flex", gap:8, marginTop:10, flexWrap:"wrap" }}>
+      <span style={{ fontSize:9, padding:"3px 9px", borderRadius:12, background:C.ok+"14", border:`1px solid ${C.ok}35`, color:C.ok, letterSpacing:"0.08em" }}>🔒 PayTR · SSL</span>
+      <span style={{ fontSize:9, padding:"3px 9px", borderRadius:12, background:C.gold+"14", border:`1px solid ${C.gold}35`, color:C.gold, letterSpacing:"0.08em" }}>📱 {C.netgsm}</span>
+    </div>
+  );
+}
+
+function ReservBtn({ venue }) {
+  const [st, setSt] = useState("idle");
+  const handle = async () => { setSt("loading"); await new Promise(r=>setTimeout(r,1400)); setSt("sent"); setTimeout(()=>setSt("idle"),3200); };
+  const tel = venue.telefon || venue.tel;
+  return (
+    <div style={{ display:"flex", gap:8, marginTop:14 }}>
+      {tel && <a href={`tel:${String(tel).replace(/\s/g,"")}`} style={{ textDecoration:"none", flex:"0 0 80px" }}><div style={{ height:40, display:"flex", alignItems:"center", justifyContent:"center", border:`1px solid ${C.goldB}`, borderRadius:3, fontSize:10, color:C.muted }}>📞 Ara</div></a>}
+      <motion.button onClick={handle} disabled={st!=="idle"} whileHover={st==="idle"?{ scale:1.02 }:{}}
+        style={{ flex:1, height:40, background: st==="sent" ? `${C.ok}1a` : `linear-gradient(135deg,${C.gold},#b8922a)`, border: st==="sent" ? `1px solid ${C.ok}55` : "none", borderRadius:3, color: st==="sent" ? C.ok : "#08080d", fontSize:11, fontWeight:700, cursor: st==="idle"?"pointer":"default", display:"flex", alignItems:"center", justifyContent:"center" }}>
+        {st==="loading" ? <motion.span animate={{ rotate:360 }} transition={{ duration:0.8, repeat:Infinity, ease:"linear" }}>�</motion.span> : st==="sent" ? ` SMS � ${C.netgsm}` : "= G�venli Rezervasyon"}
+      </motion.button>
+    </div>
+  );
+}
+
+function VenueRow({ v, idx, accent }) {
+  const [open, setOpen] = useState(false);
+  const uColor = v.uyelik==="PLATINUM" ? C.plat : C.gold;
+  return (
+    <motion.div initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay: idx*0.06 }}
+      style={{ background:C.s4, border:`1px solid ${open ? accent+"44" : C.goldB}`, borderRadius:5, overflow:"hidden" }}>
+      <div style={{ height:2.5, background:`linear-gradient(90deg,${accent},transparent)` }}/>
+      <div style={{ padding:"13px 15px" }}>
+        <div style={{ display:"flex", alignItems:"flex-start", gap:10, cursor:"pointer" }} onClick={()=>setOpen(o=>!o)}>
+          <div style={{ flex:1 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
+              <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:14.5, color:C.text, fontWeight:600 }}>{v.ad}</span>
+              <span style={{ fontSize:8, padding:"2px 7px", borderRadius:10, background:uColor+"18", border:`1px solid ${uColor}40`, color:uColor, letterSpacing:"0.12em" }}>{v.uyelik}</span>
+            </div>
+            <p style={{ fontSize:11, color:C.muted, lineHeight:1.5, marginBottom:6 }}>{(v.description||"").slice(0,88)}…</p>
+            <div style={{ display:"flex", gap:14, flexWrap:"wrap" }}>
+              {v._km != null && <span style={{ fontSize:10, color:accent }}>◎ {v._km.toFixed(1)} km</span>}
+              <span style={{ fontSize:10, color:C.gold, opacity:0.7 }}>★ {v.nar_secimi_skoru}</span>
+              <span style={{ fontSize:10, color:C.muted }}>{v.adres?.split(",")[0]}</span>
+            </div>
+          </div>
+          <motion.span animate={{ rotate: open?180:0 }} style={{ color:C.muted, fontSize:13, flexShrink:0 }}>�</motion.span>
+        </div>
+        <AnimatePresence>
+          {open && (
+            <motion.div initial={{ opacity:0, height:0 }} animate={{ opacity:1, height:"auto" }} exit={{ opacity:0, height:0 }} transition={{ duration:0.28 }}>
+              <div style={{ paddingTop:13, marginTop:12, borderTop:`1px solid ${C.goldB}` }}>
+                <p style={{ fontSize:12, color:"rgba(220,210,190,0.82)", lineHeight:1.75, marginBottom:10 }}>{v.description}</p>
+                <div style={{ fontSize:11, color:C.muted, marginBottom:4 }}>📍 {v.adres}</div>
+                <TrustBar />
+                <ReservBtn venue={v} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+function CatCard({ cat, coords, idx }) {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [items, setItems] = useState(null);
+  const toggle = useCallback(async () => {
+    if (open) { setOpen(false); return; }
+    setOpen(true);
+    if (items !== null) return;
+    setLoading(true);
+    await new Promise(r => setTimeout(r, 550));
+    setItems(filterVenues(cat.key, coords));
+    setLoading(false);
+  }, [open, items, cat.key, coords]);
+  return (
+    <motion.div initial={{ opacity:0, y:22 }} animate={{ opacity:1, y:0 }} transition={{ delay: idx*0.09, duration:0.48 }} style={{ marginBottom:10 }}>
+      <motion.button onClick={toggle} whileHover={{ x:3 }} whileTap={{ scale:0.99 }}
+        style={{ width:"100%", textAlign:"left", padding:"17px 18px", background: open ? `linear-gradient(135deg,${cat.accent}18,${cat.accent}06)` : C.s2, border:`1px solid ${open ? cat.accent+"44" : C.goldB}`, borderRadius: open ? "6px 6px 0 0" : 6, cursor:"pointer", display:"flex", alignItems:"center", gap:15 }}>
+        <div style={{ width:50, height:50, flexShrink:0, borderRadius:4, background:cat.accent+"15", border:`1px solid ${cat.accent}30`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:24 }}>{cat.icon}</div>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
+            <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:17, color:C.text, fontWeight:600 }}>{cat.title}</span>
+            <span style={{ fontSize:8, padding:"2px 8px", borderRadius:10, background:C.goldD, border:`1px solid ${C.goldB}`, color:C.gold, letterSpacing:"0.14em" }}>NAR SEÇİMİ</span>
+          </div>
+          <span style={{ fontSize:11, color:C.muted }}>{cat.sub}</span>
+        </div>
+        <motion.span animate={{ rotate: open?90:0 }} style={{ fontSize:18, flexShrink:0, color: open ? cat.accent : C.muted }}>:</motion.span>
+      </motion.button>
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ opacity:0, height:0 }} animate={{ opacity:1, height:"auto" }} exit={{ opacity:0, height:0 }} transition={{ duration:0.32 }} style={{ background:C.bg, border:`1px solid ${cat.accent}30`, borderTop:"none", borderRadius:"0 0 6px 6px", overflow:"hidden" }}>
+            <div style={{ padding:"16px 14px" }}>
+              {loading ? (
+                <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 0" }}>
+                  <motion.div animate={{ rotate:360 }} transition={{ duration:0.9, repeat:Infinity, ease:"linear" }} style={{ width:18, height:18, border:`2px solid ${cat.accent}35`, borderTopColor:cat.accent, borderRadius:"50%" }}/>
+                  <span style={{ fontSize:11, color:C.muted }}>Nar Seçimi filtreleniyor…</span>
+                </div>
+              ) : items?.length > 0 ? (
+                <>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+                    <span style={{ fontSize:9, letterSpacing:"0.18em", color:cat.accent, opacity:0.8, textTransform:"uppercase" }}>{items.length} kayıt · PLATINUM & GOLD</span>
+                    {coords && <span style={{ fontSize:9, color:C.muted }}>En yakından uzağa ↓</span>}
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:10 }}>{items.map((v,i)=>(<VenueRow key={v.id} v={v} idx={i} accent={cat.accent}/>))}</div>
+                </>
+              ) : (
+                <p style={{ fontSize:12, color:C.muted, textAlign:"center", padding:"14px 0" }}>Bu kategoride aktif üye bulunamadı.</p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+export default function KategoriVitrin({ coords, lang = "TR", globalArama = "", onBireyselIlanFormuAc, bireyselIlanlar = [] }) {
+  const [arama, setArama] = useState(globalArama || "");
+  const [kahinOpen, setKahinOpen] = useState(false);
+  useEffect(() => { if (globalArama !== undefined) setArama(globalArama); }, [globalArama]);
+
+  const greeting = { TR: "Antalya'nın seçkin rehberi", EN: "Antalya's curated guide", RU: "Путеводитель по лучшим местам Анталии", DE: "Der kuratierte Führer von Antalya" };
+  const list = Array.isArray(VENUES) ? VENUES : (VENUES && typeof VENUES === "object" ? Object.values(VENUES).flat() : []);
+  const venueResults = arama.trim().length > 1 ? list.filter(v => {
+    const q = arama.toLowerCase();
+    const isim = (v.ad || v.isim || "").toLowerCase();
+    const adres = (v.adres || "").toLowerCase();
+    const mahalle = (v.mahalle || "").toLowerCase();
+    const kategori = (v.kategori || "").toLowerCase();
+    return isim.includes(q) || adres.includes(q) || mahalle.includes(q) || kategori.includes(q);
+  }) : [];
+  const filtreliCats = arama.trim().length > 1 ? CATS.filter(c => c.title.toLowerCase().includes(arama.toLowerCase()) || c.sub.toLowerCase().includes(arama.toLowerCase()) || (c.desc||"").toLowerCase().includes(arama.toLowerCase())) : CATS;
+  const aramaAktif = arama.trim().length > 1;
+
+  return (
+    <div style={{ maxWidth:680, margin:"0 auto", padding:"0 0 80px", fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
+      <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.15, duration:0.6 }} style={{ padding:"24px 0 16px", borderBottom:"1px solid rgba(212,175,55,0.07)", marginBottom:16 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
+          <div style={{ flex:1, height:1, background:"linear-gradient(90deg,rgba(212,175,55,0.25),transparent)" }}/>
+          <span style={{ fontSize:8, letterSpacing:"0.30em", color:"rgba(212,175,55,0.45)", textTransform:"uppercase", fontFamily:"'Jost','Segoe UI',sans-serif" }}>EDİTÖRÜN NOTU</span>
+          <div style={{ flex:1, height:1, background:"linear-gradient(90deg,transparent,rgba(212,175,55,0.25))" }}/>
+        </div>
+        <h2 style={{ fontFamily:"'Cormorant Garamond','Garamond',serif", fontSize:26, color:"rgba(238,230,210,0.95)", fontWeight:400, letterSpacing:"0.03em", textAlign:"center", margin:"0 0 8px" }}>Nar Seçimi Vitrin</h2>
+        <p style={{ fontSize:11, color:C.muted, lineHeight:1.7, textAlign:"center", margin:0 }}>{greeting[lang]||greeting.TR}{coords ? " � Konumunuza g�re PLATINUM & GOLD �nce s1ralan1r." : " � Editoryal puanlamaya g�re s1ralan1r."}</p>
+      </motion.div>
+
+      {!aramaAktif && (
+        <div style={{ marginBottom:16 }}><KahinTeaser onOpen={() => setKahinOpen(true)} /></div>
+      )}
+
+      <AnimatePresence>
+        {kahinOpen && (
+          <motion.div initial={{ opacity:0, height:0, marginBottom:0 }} animate={{ opacity:1, height:"auto", marginBottom:20 }} exit={{ opacity:0, height:0, marginBottom:0 }} transition={{ duration:0.4 }} style={{ overflow:"hidden" }}>
+            <KahinPanel onClose={() => setKahinOpen(false)} ilanlar={bireyselIlanlar} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {aramaAktif && venueResults.length > 0 && (
+        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} style={{ marginBottom:16 }}>
+          <p style={{ fontSize:8, letterSpacing:"0.22em", color:C.gold, opacity:0.55, textTransform:"uppercase", marginBottom:10 }}>ARAMA: "{arama.toUpperCase()}" — {venueResults.length} SONUÇ</p>
+          {venueResults.slice(0, 30).map((v, i) => (<VenueSearchCard key={v.id||i} venue={v} coords={coords} />))}
+        </motion.div>
+      )}
+
+      {aramaAktif && filtreliCats.length === 0 && venueResults.length === 0 ? (
+        <motion.p initial={{ opacity:0 }} animate={{ opacity:1 }} style={{ textAlign:"center", color:C.muted, fontSize:12, padding:"32px 0", fontStyle:"italic" }}>"{arama}" için sonuç bulunamadı.</motion.p>
+      ) : !aramaAktif && CATS.map((cat, i) => cat.tip === "ilan" ? <IlanCard key={cat.key} cat={cat} idx={i} onBireyselIlanFormuAc={onBireyselIlanFormuAc}/> : <CatCard key={cat.key} cat={cat} coords={coords} idx={i}/>)}
+
+      {aramaAktif && filtreliCats.length > 0 && (
+        <div>
+          <p style={{ fontSize:8, letterSpacing:"0.22em", color:C.muted, opacity:0.55, textTransform:"uppercase", marginBottom:10, marginTop:16 }}>KATEGORİLER</p>
+          {filtreliCats.map((cat, i) => cat.tip === "ilan" ? <IlanCard key={cat.key} cat={cat} idx={i} onBireyselIlanFormuAc={onBireyselIlanFormuAc}/> : <CatCard key={cat.key} cat={cat} coords={coords} idx={i}/>)}
+        </div>
+      )}
+
+      {!aramaAktif && (
+        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.7 }} style={{ marginTop:32, padding:"15px 17px", background:C.s2, border:`1px solid ${C.goldB}`, borderRadius:5 }}>
+          <p style={{ fontSize:9, letterSpacing:"0.16em", color:C.gold, opacity:0.6, marginBottom:10, textTransform:"uppercase" }}>Güvenli Altyapı</p>
+          <div style={{ display:"flex", gap:18, flexWrap:"wrap", alignItems:"center" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}><span style={{ fontSize:16 }}>🔒</span><div><div style={{ fontSize:11, color:C.text }}>PayTR Güvenli Ödeme</div><div style={{ fontSize:9, color:C.muted }}>256-bit SSL · 3D Secure</div></div></div>
+            <div style={{ width:1, height:28, background:C.goldB }}/>
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}><span style={{ fontSize:16 }}>📱</span><div><div style={{ fontSize:11, color:C.text }}>0850 302 79 46</div><div style={{ fontSize:9, color:C.muted }}>NetGSM · SMS & WhatsApp</div></div></div>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+}

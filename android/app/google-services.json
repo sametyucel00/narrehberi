@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "712568563076",
+    "project_id": "nar-rehberi-pro",
+    "storage_bucket": "nar-rehberi-pro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712568563076:android:f092d827fa224e75fe29d1",
+        "android_client_info": {
+          "package_name": "narrehberi.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "712568563076-e5nkpsdpb7hlb8u980huaim2lg942un5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "narrehberi.com",
+            "certificate_hash": "613537400d86b58710c1baa85b2e53f2ccdf242f"
+          }
+        },
+        {
+          "client_id": "712568563076-ii8dtu6p2blu0gbb8enut4imiak7ipcr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZVvVUjdodeQ-YlJ1ryLQgfNqK1HJ5Y-o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "712568563076-ii8dtu6p2blu0gbb8enut4imiak7ipcr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "712568563076-d93028gk073mn9guh9i99abmr95f81kc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "narrehberi.com",
+                "app_store_id": "6758435510"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -131,7 +131,7 @@ export default function RandevuMuhurleme({ onBack, userName = 'Nar Rehberi Misaf
               className={`randevu-time-btn ${isSelected ? 'selected' : ''} ${isIdeal ? 'ideal' : ''} ${!isInWorking ? 'muted' : ''}`}
               style={isSelected ? { borderColor: NAR_GOLD, color: NAR_GOLD } : isIdeal ? { borderColor: `${NAR_GOLD}99` } : {}}
               onClick={() => setSelectedTime(h)}
-              title={!isInWorking ? 'Mekan kapalı' : ''}
+              title={!isInWorking ? 'Mekan kapal1' : ''}
             >
               {String(h).padStart(2, '0')}
             </button>

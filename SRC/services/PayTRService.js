@@ -1,66 +1,62 @@
 /**
  * V11.1 NEM v1.0 — Ödeme altyapısı (PayTR entegrasyonu).
- * V11.6 import.meta.env (Vite) uyumluluğu.
+ * V11.8 API tabanlı token alımı.
  */
 
-function getEnv(key) {
-  try {
-    const env = typeof import.meta !== 'undefined' && import.meta.env;
-    return (env?.[key] ?? '') || '';
-  } catch (_) {
-    return '';
-  }
-}
-
-const PAYTR_BASE_URL = getEnv('VITE_PAYTR_URL') || getEnv('REACT_APP_PAYTR_URL') || 'https://www.paytr.com/odeme/api/get-token';
+const API_BASE_URL = '/api';
 
 /**
- * PayTR ile ödeme token'ı alır (iframe/API).
- * @param {{ merchantOid: string, amount: number, userEmail: string, userPhone: string, userAddress: string, basket: array }} params
+ * PayTR ile ödeme token'ı alır (iframe için).
+ * @param {{ amount: number, userEmail: string, userName: string, userPhone: string, userAddress: string, basket: array }} params
  * @returns {Promise<{ token?: string, error?: string }>}
  */
 export async function createPaymentToken(params) {
   try {
-    const { merchantOid, amount, userEmail, userPhone, userAddress, basket } = params || {};
-    if (!amount || amount < 0) return { error: 'Geçersiz tutar' };
-    // Gerçek entegrasyonda: merchant_id, merchant_key, merchant_salt ile imza + POST
-    const payload = {
-      merchant_oid: merchantOid || `NR_${Date.now()}`,
-      email: userEmail || '',
-      payment_amount: Math.round(amount * 100) / 100,
-      user_phone: userPhone || '',
-      user_address: userAddress || '',
-      merchant_ok_url: window.location?.origin + '/odeme-tamam',
-      merchant_fail_url: window.location?.origin + '/odeme-hata',
-      user_basket: Array.isArray(basket) ? basket : [['Rota veya Plan', (payload.payment_amount / 100).toFixed(2), 1]],
-    };
-    // Stub: canlı ortamda PayTR API çağrısı
-    if (typeof fetch !== 'undefined') {
-      const res = await fetch(PAYTR_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(payload).toString(),
-      }).catch(() => null);
-      if (res?.ok) {
-        const data = await res.json();
-        return { token: data?.token };
-      }
+    const { amount, userEmail, userName, userPhone, userAddress, basket } = params || {};
+
+    if (!amount || amount < 1) {
+      return { error: 'Minimum ödeme tutarı 1 TL olmalıdır.' };
     }
-    return { token: `stub_${Date.now()}` };
+
+    const merchant_oid = `NR${Date.now()}${Math.floor(Math.random() * 1000)}`;
+
+    // Sepet formatı: [ [ürün adı, birim fiyat, adet] ]
+    const final_basket = Array.isArray(basket) && basket.length > 0
+      ? basket
+      : [['Nar Puan Yükleme', amount.toString(), 1]];
+
+    const response = await fetch(`${API_BASE_URL}/paytr-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount,
+        email: userEmail,
+        user_name: userName || 'Nar Rehberi Kullanıcısı',
+        user_phone: userPhone || '05555555555',
+        user_address: userAddress || 'Antalya, Türkiye',
+        merchant_oid,
+        basket: final_basket
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.status === 'success') {
+      return { token: data.token, merchant_oid };
+    } else {
+      return { error: data.reason || 'Token alınamadı' };
+    }
   } catch (e) {
-    return { error: e?.message || 'Ödeme başlatılamadı' };
+    console.error('PayTR Service Error:', e);
+    return { error: 'Sunucuyla bağlantı kurulamadı.' };
   }
 }
 
 /**
- * Nar Rehberi komisyonu: satıştan %30 (Kaşif), plan/affiliate oranları ayrı.
- * @param { number } amount - Brüt tutar (TL)
- * @param { 'kashif' | 'datedoctor' | 'lead' } type
- * @returns { number } Net komisyon (TL)
+ * Nar Rehberi komisyon hesaplama.
  */
 export function getNarCommission(amount, type = 'kashif') {
-  const rates = { kashif: 0.3, datedoctor: 0.15, lead: 1 };
-  const rate = type === 'datedoctor' ? 0.2 : type === 'lead' ? 0 : rates.kashif;
-  if (type === 'lead') return Math.min(250, Math.max(120, amount * 0.5));
+  const rates = { kashif: 0.3, datedoctor: 0.2, lead: 0.5 };
+  const rate = rates[type] || rates.kashif;
   return Math.round(amount * rate * 100) / 100;
 }

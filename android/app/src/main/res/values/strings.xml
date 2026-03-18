@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Nar Rehberi</string>
+    <string name="title_activity_main">Nar Rehberi</string>
+    <string name="package_name">narrehberi.com</string>
+    <string name="custom_url_scheme">narrehberi.com</string>
+</resources>

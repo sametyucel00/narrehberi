@@ -1,0 +1,17 @@
+Kurumsal Giriş (Emlakçı & Galerici)
+Mock giriş: kurumsal@narrehberi.com / KURUM_2026
+
+### 🎭 DEVLET TİYATROSU (DT ADMİN) GİRİŞİ
+
+* **Kurumsal E-posta:** `yonetim@antalyadevlettiyatrosu.gov.tr`
+* **Şifre:** `DT2026!`
+
+### ⬡ MASTER ADMIN (SENİN GİRİŞİN)
+
+Eğer sistemin tamamını, üyeleri ve 500 işletmeyi kontrol edeceğin "Tanrı Modu"na girmek istersen **"Master Admin"** sekmesine şu bilgileri yaz:
+
+* **E-posta:** `master@narrehberi.com`
+* **Şifre:** `NarMaster2026!`
+* **2FA Kodu:** `NAR2026`
+
+**Not:** Şifreleri yazarken büyük-küçük harfe dikkat etmeyi unutma Ortak. Giriş yaptığında o lüks panellerin yağ gibi akması lazım! 🛡️

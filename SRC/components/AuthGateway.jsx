@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ╔══════════════════════════════════════════════════════════════════╗
  * ║     NAR REHBERİ — AUTH GATEWAY (Giriş Kapısı - ONARILMIŞ)      ║
  * ║     AuthGateway.jsx                                             ║

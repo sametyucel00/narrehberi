@@ -160,7 +160,7 @@ function StepWelcome({ lang, onNext }) {
       {/* Servis adı */}
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
-        style={{ fontFamily:"'Cormorant Garamond','Garamond',serif",
+        style={{ fontFamily:"'Inter','Garamond',serif",
           fontSize: 10, letterSpacing: "0.34em", color: C.gold,
           opacity: 0.65, marginBottom: 10,
           textTransform: "uppercase" }}>
@@ -170,7 +170,7 @@ function StepWelcome({ lang, onNext }) {
       {/* Ana başlık */}
       <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.82, duration: 0.6 }}
-        style={{ fontFamily:"'Cormorant Garamond','Garamond',serif",
+        style={{ fontFamily:"'Inter','Garamond',serif",
           fontSize: 44, fontWeight: 700, color: C.text,
           letterSpacing: "0.02em", lineHeight: 1.1,
           marginBottom: 10, textAlign: "center" }}>
@@ -346,7 +346,7 @@ function StepLocation({ lang, onDone }) {
         transition={{ duration:1.1, repeat: status === "loading" ? Infinity : 0 }}
         style={{ fontSize:52, textAlign:"center", margin:"16px 0 18px",
           filter: status === "ok" ? `drop-shadow(0 0 14px ${C.ok})` : "none" }}>
-        {status === "ok" ? "✓" : status === "denied" ? "📍" : "◎"}
+        {status === "ok" ? "??" : status === "denied" ? "??" : "?"}
       </motion.div>
 
       <h2 style={{ ...sty.stepTitle, marginBottom:8 }}>{L.locHd}</h2>
@@ -363,7 +363,7 @@ function StepLocation({ lang, onDone }) {
             style={{ textAlign:"center", fontSize:12,
               color: status === "ok" ? C.ok : C.muted,
               letterSpacing:"0.09em" }}>
-            {status === "ok" ? "✓ Konum alındı" : "📍 Antalya merkezi kullanılıyor"}
+            {status === "ok" ? "?? Konum al?nd?" : "?? Antalya merkezi kullan?l?yor"}
           </motion.p>
         ) : status === "loading" ? (
           <motion.div key="spin" style={{ display:"flex",
@@ -491,14 +491,14 @@ const sty = {
     display:"flex", flexDirection:"column", alignItems:"stretch",
   },
   stepLabel: {
-    fontFamily:"'Cormorant Garamond','Garamond',serif",
+    fontFamily:"'Inter','Garamond',serif",
     fontSize:10, letterSpacing:"0.26em",
     color: C.gold, opacity:0.65,
     marginBottom:14, textAlign:"center",
     textTransform:"uppercase",
   },
   stepTitle: {
-    fontFamily:"'Cormorant Garamond','Garamond',serif",
+    fontFamily:"'Inter','Garamond',serif",
     fontSize:28, fontWeight:700,
     color: C.text, letterSpacing:"0.02em",
     marginBottom:8, textAlign:"center",

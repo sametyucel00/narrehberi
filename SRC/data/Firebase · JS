@@ -1,0 +1,16 @@
+export const auth = null;
+export const provider = null;
+
+export async function signInWithGoogle() {
+  alert("Firebase henüz kurulmadı.\n1. npm install firebase\n2. Config ekleyin");
+  return null;
+}
+
+export async function signOutUser() {
+  return null;
+}
+
+export function onAuthChange(callback) {
+  if (typeof callback === "function") callback(null);
+  return () => {};
+}

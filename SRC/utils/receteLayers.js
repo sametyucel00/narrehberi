@@ -20,7 +20,7 @@ export function getCultureTescilLayers(nabizCards) {
   const teşhis = card.teşhis || `Teşhis: ${card.title}. ${card.subtitle || ''}`;
   let reçete = card.reçete || card.subtitle || '';
   if (card.event) {
-    reçete = `Reçete: ${card.event.title}. ${card.event.text || ''} ${card.event.cta ? `— ${card.event.cta}` : ''}`;
+    re�ete = `Re�ete: ${card.event.title}. ${card.event.text || ''} ${card.event.cta ? ` ${card.event.cta}` : ''}`;
   } else if (!reçete.startsWith('Reçete:')) {
     reçete = `Reçete: ${reçete}`;
   }
@@ -38,7 +38,7 @@ export function getKahveTescilLayers(nabizCards) {
   const venueNames = (card.eczane || []).map((e) => e.name);
   const uygunMekan = venueNames[0] || 'Starbucks Coffee - ErastaPark';
   const reçete = card.reçete
-    ? `${card.reçete} Onaylandı: En uygun mekân — ${uygunMekan}.`
+    ? `${card.re�ete} Onayland1: En uygun mek�n  ${uygunMekan}.`
     : `Reçete: White Chocolate Mocha ve uygun mola. Onaylandı: En uygun mekân — ${uygunMekan}.`;
   return {
     layers: [
@@ -53,7 +53,7 @@ export function getRedCodeTescilLayers(nabizCards) {
   const teşhis = card.teşhis || card.subtitle || 'Gece yarısından sonra Nar Rehberi "Kırmızı Kod" birimi nöbette.';
   const nobetciLines = (card.nöbetçi || []).map((n) => `${n.district}: ${n.name} — ${n.address}`).join('. ');
   const yolYardim = card.yolYardim
-    ? `Acil Yol Yardım: ${card.yolYardim.tel}. `
+    ? `Acil Yol Yard1m: ${card.yolYardim.tel}. `
     : '';
   const reçete = `${card.reçete || 'Nöbetçi eczane ve acil yol yardım aşağıda.'} Nöbetçi eczaneler: ${nobetciLines}. ${yolYardim}`;
   return {
@@ -71,7 +71,7 @@ export function getTescilZamanLayers(nabizCards, location) {
   if (h >= 0 && h < 5) {
     const card = (nabizCards || []).find((c) => c.id === 'kirmizi') || MOCK_RED_CODE;
     const nobetci = (card.nöbetçi || []).map((n) => `${n.name} (${n.district})`).join(', ');
-    const yol = card.yolYardim ? `Acil Yol Yardım: ${card.yolYardim.tel}` : '';
+    const yol = card.yolYardim ? `Acil Yol Yard1m: ${card.yolYardim.tel}` : '';
     reçete = `${reçete} Nöbetçi eczaneler: ${nobetci}. ${yol}`;
   } else if (h >= 14 && h < 18) {
     const card = (nabizCards || []).find((c) => c.id === 'kahve') || MOCK_STARBUCKS;
@@ -91,7 +91,7 @@ export function getTimeBasedLayers(location) {
   return {
     layers: [
       { label: null, text: recipe.message || recipe.text },
-      ...(recipe.reçete ? [{ label: 'Reçete', text: recipe.reçete }] : []),
+      ...(recipe.re�ete ? [{ label: 'Re�ete', text: recipe.re�ete }] : []),
     ],
   };
 }

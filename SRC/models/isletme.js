@@ -39,7 +39,7 @@ export function createIsletme(overrides = {}) {
 import { YAKIN_TEST_ISLETMELER } from '../data/isletmeler';
 
 const HAVUZ_ISLETMELER = [
-  createIsletme({ id: 'elite-teras', ad: 'Elite Teras', subscription: 'ELITE', baseSkor: 85, imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', mapsQuery: 'Elite Teras Konyaaltı Antalya', lat: 36.8841, lng: 30.7056 }),
+  createIsletme({ id: 'elite-teras', ad: 'Elite Teras', subscription: 'ELITE', baseSkor: 85, imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', mapsQuery: 'Elite Teras Konyaalt1 Antalya', lat: 36.8841, lng: 30.7056 }),
   createIsletme({ id: 'deniz-kosk', ad: 'Deniz Köşkü', subscription: 'PREMIUM', baseSkor: 78, imageUrl: 'https://picsum.photos/seed/nar3/800/600', mapsQuery: 'Deniz Köşkü Lara Antalya', lat: 36.8541, lng: 30.7556 }),
   createIsletme({ id: 'gece-isiklari', ad: 'Gece Işıkları', subscription: 'GUMUS', baseSkor: 72, imageUrl: 'https://picsum.photos/seed/nar4/800/600', mapsQuery: 'Gece Işıkları Kaleiçi Antalya', lat: 36.8861, lng: 30.7036 }),
   createIsletme({ id: 'sahil-paviyon', ad: 'Sahil Paviyonu', subscription: 'PREMIUM', baseSkor: 75, imageUrl: 'https://picsum.photos/seed/nar5/800/600', mapsQuery: 'Sahil Paviyonu Konyaaltı Antalya', lat: 36.8789, lng: 30.6412 }),

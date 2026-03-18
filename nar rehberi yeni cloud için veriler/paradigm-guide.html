@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Programming Paradigm Match</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f5f4f0; color: #222; padding: 24px; }
+  h1 { font-size: 1.5rem; text-align: center; margin-bottom: 6px; color: #1a1a2e; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 28px; font-size: 0.95rem; }
+
+  .match-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border-left: 6px solid;
+    position: relative;
+  }
+  .match-card.top { border-color: #4f8ef7; }
+  .match-card.good { border-color: #6bbf72; }
+  .match-card.later { border-color: #f0c060; }
+
+  .badge {
+    position: absolute; top: 18px; right: 18px;
+    font-size: 0.72rem; font-weight: 700; padding: 4px 10px;
+    border-radius: 20px; letter-spacing: 0.5px;
+  }
+  .top .badge { background: #e8f0fe; color: #4f8ef7; }
+  .good .badge { background: #e8f5e9; color: #3a9142; }
+  .later .badge { background: #fff8e1; color: #c07a00; }
+
+  .card-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+  .card-tagline { font-size: 0.88rem; color: #888; margin-bottom: 12px; }
+  .card-desc { font-size: 0.93rem; line-height: 1.6; color: #444; margin-bottom: 14px; }
+
+  .example-box {
+    background: #f9f9fb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .example-box .toggle-label {
+    font-size: 0.82rem; color: #4f8ef7; font-weight: 600; margin-bottom: 0;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .example-content {
+    display: none;
+    margin-top: 10px;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: #333;
+  }
+  .example-content code {
+    display: block;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    white-space: pre;
+  }
+  .example-box.open .example-content { display: block; }
+  .arrow { transition: transform 0.2s; display: inline-block; }
+  .example-box.open .arrow { transform: rotate(90deg); }
+
+  .meter-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 0.83rem; color: #555; }
+  .meter { flex: 1; height: 7px; border-radius: 4px; background: #eee; overflow: hidden; }
+  .meter-fill { height: 100%; border-radius: 4px; }
+  .bg-blue { background: #4f8ef7; }
+  .bg-green { background: #6bbf72; }
+  .bg-yellow { background: #f0c060; }
+
+  .lang-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .chip { font-size: 0.78rem; background: #f0f0f5; border-radius: 12px; padding: 4px 12px; color: #555; }
+
+  .tip-box {
+    background: #fff8f0;
+    border: 1px solid #f5d9b0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #7a4800;
+    line-height: 1.6;
+  }
+  .tip-box strong { display: block; margin-bottom: 4px; font-size: 0.95rem; }
+</style>
+</head>
+<body>
+
+<h1>🧠 Your Programming Paradigm Match</h1>
+<p class="subtitle">Based on your thinking style: <strong>step-by-step</strong> · <strong>fresh to coding</strong></p>
+
+<!-- Card 1 -->
+<div class="match-card top">
+  <span class="badge">⭐ Best Fit</span>
+  <div class="card-title">Imperative / Procedural</div>
+  <div class="card-tagline">Do this, then this, then this.</div>
+  <div class="card-desc">
+    You naturally think in sequences — and that's exactly what procedural programming is. You write instructions line by line, like a recipe. The computer follows them in order, just like you'd explain something step-by-step to a friend.
+  </div>
+
+  <div class="meter-row"><span style="width:80px">Beginner fit</span><div class="meter"><div class="meter-fill bg-blue" style="width:95%"></div></div><span>95%</span></div>
+  <div class="meter-row"><span style="width:80px">Mind-match</span><div class="meter"><div class="meter-fill bg-blue" style="width:98%"></div></div><span>98%</span></div>
+
+  <div class="lang-chips">
+    <span class="chip">🐍 Python</span>
+    <span class="chip">🌐 JavaScript</span>
+    <span class="chip">🔤 C</span>
+  </div>
+
+  <div class="example-box" onclick="this.classList.toggle('open')" style="margin-top:14px">
+    <div class="toggle-label"><span class="arrow">▶</span> See a real example (click to expand)</div>
+    <div class="example-content">
+      Imagine making a cup of tea. You'd think: boil water → add tea bag → wait → remove bag → drink. Procedural code looks like that:
+      <code># Make a cup of tea
+boil_water()
+add_tea_bag()
+wait(3)  # minutes
+remove_tea_bag()
+print("Tea is ready!")</code>
+      Simple, linear, readable. This is the most natural place to start.
+    </div>
+  </div>
+</div>
+
+<!-- Card 2 -->
+<div class="match-card good">
+  <span class="badge">👍 Grows With You</span>
+  <div class="card-title">Object-Oriented (OOP)</div>
+  <div class="card-tagline">Think in things that have properties and behaviors.</div>
+  <div class="card-desc">
+    Once you're comfortable with steps, OOP lets you bundle related data and actions together into "objects." Think of a <em>Dog</em> object that knows its name and can bark. It's a great next step once procedural feels natural.
+  </div>
+
+  <div class="meter-row"><span style="width:80px">Beginner fit</span><div class="meter"><div class="meter-fill bg-green" style="width:68%"></div></div><span>68%</span></div>
+  <div class="meter-row"><span style="width:80px">Mind-match</span><div class="meter"><div class="meter-fill bg-green" style="width:75%"></div></div><span>75%</span></div>
+
+  <div class="lang-chips">
+    <span class="chip">🐍 Python</span>
+    <span class="chip">☕ Java</span>
+    <span class="chip">🔷 C#</span>
+  </div>
+
+  <div class="example-box" onclick="this.classList.toggle('open')" style="margin-top:14px">
+    <div class="toggle-label"><span class="arrow">▶</span> See a real example (click to expand)</div>
+    <div class="example-content">
+      A Dog object bundles together what it <em>is</em> (name, breed) and what it can <em>do</em> (bark, sit):
+      <code>class Dog:
+    def __init__(self, name):
+        self.name = name
+
+    def bark(self):
+        print(f"{self.name} says: Woof!")
+
+my_dog = Dog("Biscuit")
+my_dog.bark()  # Biscuit says: Woof!</code>
+      Start with procedural first — OOP will feel much more natural after a few months.
+    </div>
+  </div>
+</div>
+
+<!-- Card 3 -->
+<div class="match-card later">
+  <span class="badge">🔭 Explore Later</span>
+  <div class="card-title">Functional Programming</div>
+  <div class="card-tagline">Describe transformations, not steps.</div>
+  <div class="card-desc">
+    Functional programming is powerful but abstract — it's less about <em>how</em> to do something and more about <em>what</em> should happen. Great once you have experience, but it can feel counterintuitive at first.
+  </div>
+
+  <div class="meter-row"><span style="width:80px">Beginner fit</span><div class="meter"><div class="meter-fill bg-yellow" style="width:38%"></div></div><span>38%</span></div>
+  <div class="meter-row"><span style="width:80px">Mind-match</span><div class="meter"><div class="meter-fill bg-yellow" style="width:45%"></div></div><span>45%</span></div>
+
+  <div class="lang-chips">
+    <span class="chip">⚗️ Haskell</span>
+    <span class="chip">🟣 Elixir</span>
+    <span class="chip">🌐 JavaScript (advanced)</span>
+  </div>
+</div>
+
+<div class="tip-box">
+  <strong>💡 My recommendation for you</strong>
+  Start with <strong>Python</strong> — it's beginner-friendly and purely procedural to start. Write small scripts: a calculator, a to-do list, a number guessing game. You'll be writing real programs within days, not months.
+</div>
+
+</body>
+</html>

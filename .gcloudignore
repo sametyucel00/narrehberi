@@ -1,0 +1,44 @@
+# Git
+.git
+.gitignore
+
+# Dependencies (installed during build)
+node_modules
+
+# Build artifacts (rebuilt in Cloud Build)
+dist
+dist-ssr
+
+# Local / env
+.env
+.env.*
+!.env.example
+*.local
+
+# IDE & OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Logs & cache
+*.log
+.cache
+coverage
+.nyc_output
+
+# Docs (optional: remove if you want them in deploy)
+*.md
+!README.md
+
+# Docker local (Dockerfile kept for Cloud Build)
+.dockerignore
+docker-compose*
+
+# Lint / test (not needed at runtime)
+.eslintrc*
+eslint.config.js
+*.test.js
+*.spec.js
+__tests__
+tests

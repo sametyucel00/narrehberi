@@ -1,0 +1,340 @@
+﻿Warning: Setting up fake worker.
+Warning: Found Type3 font (custom Glyph) - g_font_4_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_5_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_4_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_5_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_4_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_8_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_9_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_8_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_11_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_13_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_14_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_13_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_11_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_13_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_13_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_13_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_8_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_15_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_15_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_15_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_14_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_14_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_15_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_8_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_13_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_13_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_15_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_15_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_15_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_10_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_8_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_9_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_8_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_13_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_13_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_14_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_12_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_7_0, trying to decode
+Warning: Found Type3 font (custom Glyph) - g_font_6_0, trying to decode
+Fiziksel ─░┼şletme Rehberi Oyunla┼şt─▒rma ve Sadakat Stratejisi
+B u  ra p or, ku lla n─▒c─▒ e tkile ┼şim ini a rt─▒rm a k, i┼şle tm e le re  ola n tra fi ─şi op tim ize  e tm e k ve  p la tform u n "ca nl─▒" ka lm a s ─▒n─▒ s a ─şla m a k i├ğ in
+ta s a rla nm ─▒┼ş oy u nla ┼şt─▒rm a  m e ka nikle ri ve  u y g u la m a  s tra te jile rini i├ğ e rm e kte d ir.
+1. Ye ni O y u nla ┼şt─▒r m a  M e ka nikle ri
+M e vcu t "a rka d a ┼ş─▒n─▒ g e tir" ve  "3  ke z g it" m a nt─▒─ş─▒n─▒ a ┼şa ─ş─▒d a ki ka tm a nla rla  d e rinle ┼ştire b iliriz:
+A . G├Â re v  Sis te m i (Qu e s ts  & M is s ions )
+Ku lla n─▒c─▒la ra  s a d e ce  g itm e k d e ─şil, b e lirli b ir a m a ca  hizm e t e tm e k i├ğ in g ├Â re vle r ve rin.
+Ke ┼şif G├Â re v i: "B u  ha fta  hi├ğ  g itm e d i─şin 3  fa rkl─▒ ka te g orid e ki (Ka fe , Re s tora n, Sp or Sa lonu ) i┼şle tm e y i ziy a re t e t."
+Gu rm e  Se ris i: "┼Şe hird e ki e n iy i 5  ha m b u rg e rciy i ziy a re t e t, 'B u rg e r U s ta s ─▒' roze ti ve  %2 0 e ks tra  p u a n ka za n."
+Ha fta  Sonu  Sa v a ┼ş├ğ ─▒s ─▒: "C u m a rte s i ve  Pa za r g ├╝ nle ri top la m  4 i┼şle tm e y e  che ck-in y a p ."
+B . Roze tle r v e  ├£ nv a nla r (B a d g e s  & Prog re s s ion)
+Ku lla n─▒c─▒la r─▒n p rofi lind e  s e rg ile y e b ile ce ─şi d ijita l b a ┼şa r─▒la r a id iy e t d u y g u s u nu  a rt─▒r─▒r.
+Y e re l Ka hra m a n: B ir m a ha lle d e ki i┼şle tm e le re  e n ├ğ ok g id e n ki┼şi.
+Ge ce  Ku ┼şu : Sa a t 2 2 :00'd e n s onra  e n ├ğ ok e tkile ┼şim  ku ra n ku lla n─▒c─▒.
+E le ┼ştirm e n: 5 0'd e n fa zla  foto─şra fl─▒ ve  d e ta y l─▒ y oru m  y a p a n ku lla n─▒c─▒.
+C . Se v iy e  (Tie r) Sis te m i
+Pu a nla r b iriktik├ğ e  ku lla n─▒c─▒la r─▒n s ta t├╝ s ├╝ n├╝  y ├╝ ks e ltin.
+B ronz/G├╝ m ├╝ ┼ş/A lt─▒n ├£ y e : ├£ s t s e viy e le rd e ki ku lla n─▒c─▒la ra  s a d e ce  p u a n d e ─şil, "─░┼şle tm e d e  s ─▒ra  ├Â nce li─şi", "V a le nin ├╝ cre ts iz
+olm a s ─▒" ve y a  "Gizli m e n├╝ y e  e ri┼şim " g ib i fi ziks e l a y r─▒ca l─▒kla r ta n─▒y ─▒n.
+D . Re ka b e t: L id e rlik Ta b lola r─▒ (L e a d e rb oa rd s )
+─░ns a nla r d o─şa s ─▒ g e re ─şi re ka b e ti s e ve r.
+Ha fta l─▒k Top  10: O  ha fta  e n ├ğ ok p u a n top la y a nla ra  s ├╝ rp riz ├Â d ├╝ lle r (├û rn: B ir s onra ki ka hve n b izd e n).
+M a ha lle  M u hta r─▒: B e lirli b ir i┼şle tm e y e  ve y a  b ├Â lg e y e  e n ├ğ ok g id e n ki┼şiy e  "M u hta r" ├╝ nva n─▒ ve rin. D i─şe r ku lla n─▒c─▒la r b u  ├╝ nva n─▒
+ond a n g e ri a lm a k i├ğ in d a ha  fa zla  g itm e y e  te ┼şvik e d ilir (Fou rs q u a re  m a nt─▒─ş─▒).
+2 . Sis te m i C a nl─▒ v e  E fe ktif  Tu tm a  Stra te jile ri
+O y u nla ┼şt─▒rm a n─▒n e n b ├╝ y ├╝ k d ├╝ ┼şm a n─▒ "m onotonlu ktu r". Sis te m i ca nl─▒ tu tm a k i├ğ in:
+1. D ina m ik B ild irim le r (Pu s h N otifi ca tions )
+Sa d e ce  re kla m  d e ─şil, "f─▒rs a t ka ├ğ ─▒y or" his s i y a ra t─▒n:
+"┼Şu  a n Ka d ─▒k├Â y 'd e s in ve  'X  Ka fe 'd e  p u a nla r─▒n─▒ 2  ka t─▒na  ├ğ ─▒ka rm a  ┼şa ns ─▒n va r, s a d e ce  s on 2  s a a t!"
+"A rka d a ┼ş─▒n Ke re m  a z ├Â nce  'Y Re s tora n'd a  che ck-in y a p t─▒, ona  ka t─▒lm a k is te r m is in? "
+2 . S─▒n─▒rl─▒ S├╝ re li E tkinlikle r (Fla s h E v e nts )
+B e lirli g ├╝ nle rd e  ve y a  s a a tle rd e  s is te m d e  "Ha p p y  Hou r" ila n e d in. T├╝ m  p u a n ka za n─▒m la r─▒ 2 x  ols u n ve y a  b e lirli b ir i┼şle tm e d e  o g ├╝ ne
+├Â ze l g izli b ir ├Â d ├╝ l ta n─▒m la y ─▒n.
+3 . Ku lla n─▒c─▒ Ta ra f─▒nd a n O lu ┼ştu ru la n ─░├ğ e rik (U GC ) Te ┼şv iki
+─░┼şle tm e  re hb e rinin ca nl─▒ g ├Â r├╝ nm e s i i├ğ in g ├╝ nce l foto─şra fla ra  ihtiy a c─▒n─▒z va r.
+"Ye m e ─şinin foto─şra f─▒n─▒ p a y la ┼ş, +5 0 p u a n ka za n."
+----------------Page (0) Break----------------
+"─░┼şle tm e d e ki g ├╝ nce l m e n├╝  fi y a t─▒n─▒ d o─şru la , +2 0 p u a n ka za n." (V e ri d o─şru lu ─şu nu  ku lla n─▒c─▒y a  y a p t─▒r─▒n).
+4. Sos y a l Ka n─▒t v e  Pa y la ┼ş─▒m
+Ku lla n─▒c─▒ b ir ind irim  ka za nd ─▒─ş─▒nd a  ve y a  roze t a ld ─▒─ş─▒nd a  b u nu  Ins ta g ra m /W ha ts A p p  ├╝ ze rind e n p a y la ┼şm a s ─▒ i├ğ in ┼ş─▒k b ir g ├Â rs e l
+┼şa b lon s u nu n. Pa y la ┼şt─▒─ş─▒ he r m e cra  i├ğ in e ks tra  k├╝ ├ğ ├╝ k b onu s la r ve rin.
+3 . Te knik v e  O p e ra s y one l ├û ne rile r
+G├╝ v e nlik: Su is tim a li ├û nle m e
+O y u nla ┼şt─▒rm a  s is te m le rind e  e n b ├╝ y ├╝ k s oru n "s a hte  che ck-in"le rd ir.
+Konu m  D o─şru la m a  (GPS): Ku lla n─▒c─▒n─▒n i┼şle tm e  s ─▒n─▒rla r─▒ i├ğ e ris ind e  old u ─şu nu  GPS ile  d o─şru la y ─▒n.
+QR Kod  v e y a  ┼Şifre : ─░┼şle tm e  ka s a s ─▒nd a  d u ra n b ir QR kod u  ta ra tm a d a n ve y a  i┼şle tm e cinin g ire ce ─şi b ir kod  olm a d a n p u a n
+ve rm e y in.
+─░┼şle tm e  Sa hip le ri ─░├ğ in Pa ne l
+─░┼şle tm e  s a hip le ri, ke nd i d ├╝ kka nla r─▒na  e n ├ğ ok kim le rin g e ld i─şini g ├Â re b ilm e li. O nla ra  "E n s a d ─▒k 10 m ├╝ ┼şte rine  ├Â ze l m e s a j g ├Â nd e r"
+g ib i ├Â ze llikle r s u na ra k i┼şle tm e ciy i d e  s is te m in i├ğ ine  ├ğ e kin.
+V e ri A na liti─şi
+Ha ng i g ├Â re vle rin d a ha  ├ğ ok y a p ─▒ld ─▒─ş─▒n─▒, ha ng i s a a tle rd e  ku lla n─▒c─▒la r─▒n d ─▒┼şa r─▒ ├ğ ─▒kt─▒─ş─▒n─▒ a na liz e d e re k b ir s onra ki a y ─▒n g ├Â re vle rini b u na
+g ├Â re  op tim ize  e d in.
+4 . ├û rne k Se na ry o (Ku lla n─▒c ─▒ Yolc u lu ─şu )
+1. Giri┼ş: A hm e t u y g u la m a y ─▒ a ├ğ a r. "Ha fta l─▒k G├Â re v: 3  Fa rkl─▒ Ka fe  Z iy a re t E t" g ├Â re vini g ├Â r├╝ r.
+2 . E y le m : A hm e t d a ha  ├Â nce  g itm e d i─şi b ir ka fe y e  g id e r. GPS ile  che ck-in y a p a r.
+3 . ├û d ├╝ l: A hm e t he m  ziy a re t p u a n─▒ a l─▒r, he m  d e  "Ka ┼şif" roze tinin ilk a d ─▒m ─▒n─▒ ta m a m la r.
+4. Sos y a l E tkile ┼şim : A hm e t'e  "A rka d a ┼ş─▒n M e hm e t d e  b u ra y a  y a k─▒n, ona  b ir d a ve t g ├Â nd e rirs e n ikiniz d e  %10 ind irim
+ka za n─▒rs ─▒n─▒z" b ild irim i g id e r.
+5 . D ├Â ng ├╝ : A hm e t ind irim ini ku lla n─▒r, p u a n b iriktirir ve  "G├╝ m ├╝ ┼ş ├£ y e " olm a k i├ğ in b ir s onra ki ziy a re ti p la nla r.
+----------------Page (1) Break----------------
+
