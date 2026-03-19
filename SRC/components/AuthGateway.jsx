@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ╔══════════════════════════════════════════════════════════════════╗
  * ║     NAR REHBERİ — AUTH GATEWAY (Giriş Kapısı - ONARILMIŞ)      ║
  * ║     AuthGateway.jsx                                             ║
@@ -9,6 +9,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { auth, db } from "../services/firebase";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 // ─── SABITLER ────────────────────────────────────────────────────────────────
 
@@ -22,10 +25,9 @@ const TEXT_PRI    = "rgba(240,234,218,0.93)";
 const TEXT_MUT    = "rgba(180,170,150,0.55)";
 const DANGER      = "#c0604a";
 
-// Mock kimlik bilgileri
-const MOCK_CREDENTIALS = {
-  DT_ADMIN: { email: "yonetim@antalyadevlettiyatrosu.gov.tr", sifre: "DT2025" },
-  MASTER:   { email: "admin@narrehberi.com",                  sifre: "NAR_MASTER" },
+const ADMIN_FALLBACKS = {
+  DT_ADMIN: { email: "yonetim@antalyadevlettiyatrosu.gov.tr", sifre: "DT2025", ad: "Tiyatro Yetkilisi" },
+  MASTER: { email: "admin@narrehberi.com", sifre: "NAR_MASTER", ad: "Kurucu" },
 };
 
 const ROLLER = [
@@ -42,6 +44,20 @@ const ROLLER = [
     altetiket: "Devlet Tiyatrosu Yetkilisi",
     ikon: "🎭",
     renk: GOLD,
+  },
+  {
+    id: "KURUMSAL",
+    etiket: "Kurumsal Üyelik",
+    altetiket: "Kurumsal hesap ve ilan yönetimi",
+    ikon: "🏢",
+    renk: "#5fa8d3",
+  },
+  {
+    id: "ISLETME",
+    etiket: "İşletme Girişi",
+    altetiket: "Mekan, sadakat ve QR yönetimi",
+    ikon: "🍽",
+    renk: "#e07a5f",
   },
   {
     id: "MASTER",
@@ -92,6 +108,57 @@ function InputField({ label, type = "text", value, onChange, placeholder }) {
   );
 }
 
+function normalizeEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function mapAuthError(error) {
+  switch (error?.code) {
+    case "auth/invalid-email":
+      return "Geçerli bir e-posta adresi girin.";
+    case "auth/missing-password":
+      return "Şifre alanı zorunludur.";
+    case "auth/weak-password":
+      return "Şifre en az 6 karakter olmalıdır.";
+    case "auth/email-already-in-use":
+      return "Bu e-posta adresiyle zaten bir hesap var.";
+    case "auth/user-not-found":
+    case "auth/wrong-password":
+    case "auth/invalid-credential":
+      return "E-posta veya şifre hatalı.";
+    case "auth/network-request-failed":
+      return "Ağ hatası oluştu. İnternet bağlantınızı kontrol edin.";
+    case "auth/too-many-requests":
+      return "Çok fazla deneme yapıldı. Lütfen biraz sonra tekrar deneyin.";
+    default:
+      return "İşlem sırasında bir hata oluştu.";
+  }
+}
+
+async function ensureUserDoc(user, payload) {
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+  const base = {
+    uid: user.uid,
+    email: normalizeEmail(user.email),
+    rol: payload.rol || "USER",
+    aktif: true,
+    olusturma_tarihi: snap.exists() ? snap.data().olusturma_tarihi || new Date().toISOString() : new Date().toISOString(),
+  };
+
+  await setDoc(
+    ref,
+    {
+      ...base,
+      ...payload,
+    },
+    { merge: true },
+  );
+
+  const finalSnap = await getDoc(ref);
+  return { uid: user.uid, id: user.uid, ...finalSnap.data() };
+}
+
 // ─── FORMLAR ─────────────────────────────────────────────────────────────────
 
 function UserForm({ onSuccess }) {
@@ -103,11 +170,37 @@ function UserForm({ onSuccess }) {
   const [yukleniyor, setYuk] = useState(false);
 
   const gonder = async () => {
-    if (!email || !sifre) { setHata("Lütfen tüm alanları doldurun."); return; }
-    setHata(""); setYuk(true);
-    await new Promise(r => setTimeout(r, 1200));
-    setYuk(false);
-    onSuccess({ rol: "USER", ad: ad || email.split("@")[0] });
+    const cleanEmail = normalizeEmail(email);
+    if (!cleanEmail || !sifre || (mod === "kayit" && !ad.trim())) {
+      setHata(mod === "kayit" ? "Ad, e-posta ve şifre alanlarını doldurun." : "E-posta ve şifre alanlarını doldurun.");
+      return;
+    }
+    setHata("");
+    setYuk(true);
+    try {
+      if (mod === "kayit") {
+        const cred = await createUserWithEmailAndPassword(auth, cleanEmail, sifre);
+        const session = await ensureUserDoc(cred.user, {
+          rol: "USER",
+          ad_soyad: ad.trim(),
+          aktif: true,
+          puan: null,
+        });
+        onSuccess(session);
+      } else {
+        const cred = await signInWithEmailAndPassword(auth, cleanEmail, sifre);
+        const session = await ensureUserDoc(cred.user, {
+          rol: "USER",
+          ad_soyad: ad.trim() || cleanEmail.split("@")[0],
+          aktif: true,
+        });
+        onSuccess(session);
+      }
+    } catch (error) {
+      setHata(mapAuthError(error));
+    } finally {
+      setYuk(false);
+    }
   };
 
   return (
@@ -133,6 +226,92 @@ function UserForm({ onSuccess }) {
   );
 }
 
+function RoleAccountForm({
+  onSuccess,
+  role,
+  title,
+  helper,
+  submitLabel,
+  accent = GOLD,
+  companyLabel = "Firma / İşletme Adı",
+}) {
+  const [mod, setMod] = useState("giris");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [sifre, setSifre] = useState("");
+  const [hata, setHata] = useState("");
+  const [yukleniyor, setYuk] = useState(false);
+
+  const isBusiness = role === "KURUMSAL" || role === "ISLETME";
+
+  const gonder = async () => {
+    const cleanEmail = normalizeEmail(email);
+    if (!cleanEmail || !sifre || (mod === "kayit" && !name.trim())) {
+      setHata(mod === "kayit" ? "Tüm zorunlu alanları doldurun." : "E-posta ve şifre alanlarını doldurun.");
+      return;
+    }
+
+    setHata("");
+    setYuk(true);
+    try {
+      if (mod === "kayit") {
+        const cred = await createUserWithEmailAndPassword(auth, cleanEmail, sifre);
+        const session = await ensureUserDoc(cred.user, {
+          rol: role,
+          aktif: true,
+          ...(isBusiness ? { firma_adi: name.trim() } : { ad_soyad: name.trim() }),
+        });
+        onSuccess(session);
+      } else {
+        const cred = await signInWithEmailAndPassword(auth, cleanEmail, sifre);
+        const ref = doc(db, "users", cred.user.uid);
+        const snap = await getDoc(ref);
+        const existingRole = snap.exists() ? snap.data().rol : null;
+        const session = await ensureUserDoc(cred.user, {
+          rol: existingRole || role,
+          aktif: true,
+          ...(isBusiness
+            ? { firma_adi: snap.exists() ? snap.data().firma_adi || cleanEmail.split("@")[0] : cleanEmail.split("@")[0] }
+            : { ad_soyad: snap.exists() ? snap.data().ad_soyad || cleanEmail.split("@")[0] : cleanEmail.split("@")[0] }),
+        });
+        onSuccess(session);
+      }
+    } catch (error) {
+      setHata(mapAuthError(error));
+    } finally {
+      setYuk(false);
+    }
+  };
+
+  return (
+    <div>
+      <div style={{ ...styles.kurumBox, borderColor: `${accent}55` }}>
+        <span style={{ fontSize: 10, letterSpacing: "0.18em", color: accent }}>{title}</span>
+        <p style={{ fontSize: 11, color: TEXT_MUT, marginTop: 4 }}>{helper}</p>
+      </div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
+        {["giris", "kayit"].map((m) => (
+          <button key={m} onClick={() => setMod(m)} style={{ ...styles.tabPill, ...(mod === m ? styles.tabPillActive : {}) }}>
+            {m === "giris" ? "Giriş Yap" : "Kayıt Ol"}
+          </button>
+        ))}
+      </div>
+      {mod === "kayit" && (
+        <InputField
+          label={companyLabel}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={isBusiness ? "Nar Rehberi İşletmesi" : "Ad Soyad"}
+        />
+      )}
+      <InputField label="E-posta" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ornek@mail.com" />
+      <InputField label="Şifre" type="password" value={sifre} onChange={(e) => setSifre(e.target.value)} placeholder="••••••••" />
+      {hata && <p style={styles.hata}>{hata}</p>}
+      <SubmitButton yukleniyor={yukleniyor} onClick={gonder} etiket={submitLabel} renk={accent} dark />
+    </div>
+  );
+}
+
 function DTAdminForm({ onSuccess }) {
   const [email, setEmail] = useState("");
   const [sifre, setSifre] = useState("");
@@ -140,15 +319,39 @@ function DTAdminForm({ onSuccess }) {
   const [yukleniyor, setYuk] = useState(false);
 
   const gonder = async () => {
-    if (!email || !sifre) { setHata("Lütfen kimlik bilgilerini girin."); return; }
-    setHata(""); setYuk(true);
-    await new Promise(r => setTimeout(r, 1500));
-    setYuk(false);
-    const dogru = MOCK_CREDENTIALS.DT_ADMIN;
-    if (email === dogru.email && sifre === dogru.sifre) {
-      onSuccess({ rol: "DT_ADMIN", ad: "Tiyatro Yetkilisi" });
-    } else {
-      setHata("Kimlik bilgileri hatalı.");
+    const cleanEmail = normalizeEmail(email);
+    if (!cleanEmail || !sifre) {
+      setHata("Lütfen kimlik bilgilerini girin.");
+      return;
+    }
+    setHata("");
+    setYuk(true);
+    try {
+      let cred;
+      try {
+        cred = await signInWithEmailAndPassword(auth, cleanEmail, sifre);
+      } catch (error) {
+        const fallback = ADMIN_FALLBACKS.DT_ADMIN;
+        if (
+          (error?.code === "auth/user-not-found" || error?.code === "auth/invalid-credential") &&
+          cleanEmail === fallback.email &&
+          sifre === fallback.sifre
+        ) {
+          cred = await createUserWithEmailAndPassword(auth, cleanEmail, sifre);
+        } else {
+          throw error;
+        }
+      }
+      const session = await ensureUserDoc(cred.user, {
+        rol: "DT_ADMIN",
+        ad_soyad: ADMIN_FALLBACKS.DT_ADMIN.ad,
+        aktif: true,
+      });
+      onSuccess(session);
+    } catch (error) {
+      setHata(mapAuthError(error));
+    } finally {
+      setYuk(false);
     }
   };
 
@@ -174,15 +377,42 @@ function MasterForm({ onSuccess }) {
   const [yukleniyor, setYuk] = useState(false);
 
   const gonder = async () => {
-    if (!email || !sifre || !kod) { setHata("Tüm alanlar zorunludur."); return; }
-    setHata(""); setYuk(true);
-    await new Promise(r => setTimeout(r, 1800));
-    setYuk(false);
-    const dogru = MOCK_CREDENTIALS.MASTER;
-    if (email === dogru.email && sifre === dogru.sifre && kod === "NAR2025") {
-      onSuccess({ rol: "MASTER", ad: "Kurucu" });
-    } else {
-      setHata("Erişim reddedildi.");
+    const cleanEmail = normalizeEmail(email);
+    if (!cleanEmail || !sifre || !kod) {
+      setHata("Tüm alanlar zorunludur.");
+      return;
+    }
+    setHata("");
+    setYuk(true);
+    try {
+      const fallback = ADMIN_FALLBACKS.MASTER;
+      if (kod !== "NAR2025") {
+        throw { code: "master/invalid-2fa" };
+      }
+      let cred;
+      try {
+        cred = await signInWithEmailAndPassword(auth, cleanEmail, sifre);
+      } catch (error) {
+        if (
+          (error?.code === "auth/user-not-found" || error?.code === "auth/invalid-credential") &&
+          cleanEmail === fallback.email &&
+          sifre === fallback.sifre
+        ) {
+          cred = await createUserWithEmailAndPassword(auth, cleanEmail, sifre);
+        } else {
+          throw error;
+        }
+      }
+      const session = await ensureUserDoc(cred.user, {
+        rol: "MASTER",
+        ad_soyad: fallback.ad,
+        aktif: true,
+      });
+      onSuccess(session);
+    } catch (error) {
+      setHata(error?.code === "master/invalid-2fa" ? "Doğrulama kodu hatalı." : mapAuthError(error));
+    } finally {
+      setYuk(false);
     }
   };
 
@@ -226,9 +456,31 @@ export default function AuthGateway({ onClose, onAuth }) {
   };
 
   const formMap = {
-    USER:     <UserForm    onSuccess={handleAuth} />,
+    USER: <UserForm onSuccess={handleAuth} />,
     DT_ADMIN: <DTAdminForm onSuccess={handleAuth} />,
-    MASTER:   <MasterForm  onSuccess={handleAuth} />,
+    KURUMSAL: (
+      <RoleAccountForm
+        onSuccess={handleAuth}
+        role="KURUMSAL"
+        title="KURUMSAL HESAP"
+        helper="Kurumsal ilan ve içerik yönetimi için hesap oluşturabilir veya giriş yapabilirsiniz."
+        submitLabel="KURUMSAL DEVAM ET"
+        accent="#5fa8d3"
+        companyLabel="Firma Adı"
+      />
+    ),
+    ISLETME: (
+      <RoleAccountForm
+        onSuccess={handleAuth}
+        role="ISLETME"
+        title="İŞLETME HESABI"
+        helper="Mekan, sadakat ve QR işlemleri için işletme hesabınızla devam edin."
+        submitLabel="İŞLETME GİRİŞİ"
+        accent="#e07a5f"
+        companyLabel="İşletme Adı"
+      />
+    ),
+    MASTER: <MasterForm onSuccess={handleAuth} />,
   };
 
   return (

@@ -1,0 +1,26 @@
+Hostinger deploy paketi
+
+Yuklenecek yer:
+- public_html
+
+Paket icerigi:
+- index.html
+- index.js
+- index.css
+- .htaccess
+- favicon.png
+- logo.png
+- paytr_config.php
+- api/
+
+Kurulum:
+1. Hostinger File Manager icinde public_html klasorunu ac.
+2. Mevcut dosyalarin yedegini al.
+3. Bu zip dosyasini public_html icine yukle.
+4. Zipi public_html icinde cikart.
+5. Dosyalar dogrudan public_html kokunde olmali.
+
+Notlar:
+- Bu paket aktif calisan bundle surumunu icerir.
+- Firebase ayarlari index.js icinde mevcut.
+- PayTR icin PHP calismali.

@@ -267,6 +267,23 @@ function mergeEventLists(...lists) {
   return [...map.values()].sort(sortEvents);
 }
 
+function dedupeServiceList(items = []) {
+  const map = new Map();
+  items.forEach((item) => {
+    const key = [
+      String(item?.type || "service"),
+      String(item?.kat || item?.kategori || ""),
+      String(item?.isim || item?.ad || ""),
+      String(item?.telefon || item?.tel || ""),
+      String(item?.adres || item?.yer || ""),
+    ].join("|").toLocaleLowerCase("tr-TR");
+    if (!map.has(key)) {
+      map.set(key, item);
+    }
+  });
+  return [...map.values()];
+}
+
 function filterEventsByMonth(events, month) {
   const selected = Number(month) || getMonth();
   return (events || []).filter((e) => {
@@ -419,7 +436,7 @@ export function KahinPanel({ onClose, ilanlar: ilanlarFromApp = [], lang = "TR",
     const unsubPulse = onSnapshot(qPulse, (snap) => {
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       setLiveEvents(docs.filter(d => d.type === "event"));
-      setLiveServices(docs.filter(d => d.type === "service"));
+      setLiveServices(dedupeServiceList(docs.filter(d => d.type === "service")));
     });
     // Dynamically commercial categories fetch removed as per user request to use static content
     // const unsubComm = onSnapshot(collection(db, "commercial_categories"), (snap) => {
@@ -439,7 +456,7 @@ export function KahinPanel({ onClose, ilanlar: ilanlarFromApp = [], lang = "TR",
   const tt = getTimeTheme(h);
   const allEvents = useMemo(() => mergeEventLists(ANTALYA_ETKINLIK_TAKVIMI_2026, liveEvents), [liveEvents]);
   const monthEvents = useMemo(() => filterEventsByMonth(allEvents, selectedMonth).sort(sortEvents), [allEvents, selectedMonth]);
-  const servicesList = liveServices;
+  const servicesList = useMemo(() => dedupeServiceList(liveServices), [liveServices]);
   const mapsUrl = (query) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
   const callUrl = (tel) => `tel:${String(tel || "").replace(/\D/g, "")}`;
   const waUrl = (tel, message) => `https://wa.me/${String(tel).replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;

@@ -158,7 +158,7 @@ export default function BireyselIlanFormu({ kategori, onBasarili, onKapat, onIla
       }, 2200);
     } catch (err) {
       console.error("Firebase'e eklenirken veya fotoğraf yüklenirken hata:", err);
-      alert("İlan gönderilirken bir hata oluştu: " + err.message);
+      alert("İlan gönderilirken bir hata oluştu. Lütfen bilgileri kontrol edip tekrar deneyin.");
       setYukleniyor(false);
     }
   };
@@ -322,7 +322,7 @@ export default function BireyselIlanFormu({ kategori, onBasarili, onKapat, onIla
               <div style={{ flex: 1, minHeight: 80, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <img src={photos[galleryIdx]} alt="" style={{ maxHeight: 100, maxWidth: "100%", objectFit: "contain" }} />
               </div>
-              <button type="button" onClick={() => setGalleryIdx(i => i >= photos.length - 1 ? 0 : i + 1)} style={{ flexShrink: 0, width: 36, height: 48, border: "none", background: "rgba(255,255,255,0.06)", color: TEXT_PRI, cursor: "pointer", fontSize: 18 }}>:</button>
+              <button type="button" onClick={() => setGalleryIdx(i => i >= photos.length - 1 ? 0 : i + 1)} style={{ flexShrink: 0, width: 36, height: 48, border: "none", background: "rgba(255,255,255,0.06)", color: TEXT_PRI, cursor: "pointer", fontSize: 18 }}>›</button>
             </div>
           )}
         </div>
