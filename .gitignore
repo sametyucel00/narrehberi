@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Capacitor / iOS
+ios/App/build
+ios/build
+DerivedData
+*.xcuserstate
+xcuserdata/

@@ -1,5 +1,10 @@
 {
   "appId": "narrehberi.com",
   "appName": "Nar Rehberi",
-  "webDir": "dist"
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "ios": {
+    "contentInset": "automatic",
+    "allowsLinkPreview": false
+  }
 }
