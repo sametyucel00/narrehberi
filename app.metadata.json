@@ -1,6 +1,6 @@
-{
+﻿{
   "appName": "Nar Rehberi",
-  "appCode": "narrehberi.com",
+  "appCode": "com.narrehberi.app",
   "version": "1.0.0",
   "buildNumber": "1",
   "iconSource": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp",
@@ -8,3 +8,4 @@
     "displayName": "Nar Rehberi"
   }
 }
+

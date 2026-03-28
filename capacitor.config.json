@@ -1,5 +1,5 @@
 ﻿{
-    "appId":  "narrehberi.com",
+    "appId":  "com.narrehberi.app",
     "appName":  "Nar Rehberi",
     "webDir":  "dist",
     "bundledWebRuntime":  false,
@@ -8,3 +8,4 @@
                 "allowsLinkPreview":  false
             }
 }
+
