@@ -39,15 +39,23 @@ jobs:
       - name: Sync Capacitor iOS
         run: npx cap sync ios
 
-      - name: Install CocoaPods
+      - name: Install CocoaPods if Podfile exists
         run: |
           cd ios/App
-          pod install --repo-update
+          if [ -f "Podfile" ]; then
+            pod install --repo-update
+          else
+            echo "Podfile yok, CocoaPods adımı atlanıyor."
+          fi
 
       - name: Build iOS simulator app
         run: |
-          xcodebuild \
-            -workspace ios/App/App.xcworkspace \
+          if [ -d "ios/App/App.xcworkspace" ]; then
+            XCODE_CONTAINER="-workspace ios/App/App.xcworkspace"
+          else
+            XCODE_CONTAINER="-project ios/App/App.xcodeproj"
+          fi
+          xcodebuild $XCODE_CONTAINER \
             -scheme App \
             -configuration Debug \
             -sdk iphonesimulator \
@@ -62,6 +70,6 @@ jobs:
           name: ios-simulator-build
           path: |
             ios/build
-            ios/App/App.xcworkspace
             ios/App/App.xcodeproj
+            ios/App/App.xcworkspace
           if-no-files-found: error
