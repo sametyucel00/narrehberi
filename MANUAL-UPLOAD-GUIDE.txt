@@ -1,0 +1,64 @@
+Nar Rehberi iOS Manuel Yukleme Paketi
+
+Bu klasor yalnizca iOS / GitHub Actions hatti icin gereken dosyalari icerir.
+
+Yuklenecek dosya ve klasorler:
+- .gitignore
+- README.md
+- package.json
+- package-lock.json
+- capacitor.config.json
+- index.html
+- .github/
+- ios/
+- scripts/prepare-ios-secrets.ps1
+- scripts/check-ios-release.ps1
+
+GitHub'a elle yukleme sirasi:
+1. Repo kokune gir.
+2. Bu klasordeki dosya ve klasorleri ayni yollarla kendi repoya kopyala.
+3. Ozellikle su klasor yapisi korunmali:
+   - .github/workflows/
+   - .github/ios/
+   - ios/
+   - scripts/
+4. Commit olustur.
+5. GitHub'a push et.
+
+Commit onerisi:
+feat: prepare ios build and release pipeline
+
+GitHub Actions'ta gorecegin workflow'lar:
+- iOS Build
+- iOS Release
+
+Gerekli GitHub Secrets:
+- BUILD_CERTIFICATE_BASE64
+- P12_PASSWORD
+- BUILD_PROVISION_PROFILE_BASE64
+- KEYCHAIN_PASSWORD
+- IOS_TEAM_ID
+- APPSTORE_CONNECT_KEY_ID
+- APPSTORE_CONNECT_ISSUER_ID
+- APPSTORE_CONNECT_API_KEY_BASE64
+
+Secrets hazirlama:
+1. PowerShell ac.
+2. Su komutu yardim icin calistir:
+   npm run ios:secrets:help
+3. Ya da dogrudan ornek Base64 komutlari:
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\certificate.p12"))
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\profile.mobileprovision"))
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\AuthKey_ABC123XYZ.p8"))
+
+Release oncesi kontrol:
+- npm run ios:release:check
+
+Workflow calisma sirasi:
+1. Once iOS Build
+2. Sonra iOS Release
+
+Beklenen sonuc:
+- iOS Build: simulator artifact uretir
+- iOS Release: signed archive / IPA uretir
+- App Store Connect secret'lari varsa TestFlight upload da yapar
