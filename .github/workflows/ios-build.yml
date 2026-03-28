@@ -30,6 +30,20 @@ jobs:
       - name: Build web app
         run: npm run build
 
+      - name: Prepare GoogleService-Info.plist
+        env:
+          GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
+        run: |
+          if [ -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" ]; then
+            echo -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > ios/App/App/GoogleService-Info.plist
+          elif [ -f "ios/App/App/GoogleService-Info.plist.template" ]; then
+            cp ios/App/App/GoogleService-Info.plist.template ios/App/App/GoogleService-Info.plist
+            echo "Secret yok, template plist kullanıldı."
+          else
+            echo "GoogleService-Info.plist veya template bulunamadı."
+            exit 1
+          fi
+
       - name: Add iOS platform if missing
         run: |
           if [ ! -d "ios/App" ]; then
