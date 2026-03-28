@@ -63,17 +63,25 @@ jobs:
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           cp "$PP_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/"
 
-      - name: Install CocoaPods
+      - name: Install CocoaPods if Podfile exists
         run: |
           cd ios/App
-          pod install --repo-update
+          if [ -f "Podfile" ]; then
+            pod install --repo-update
+          else
+            echo "Podfile yok, CocoaPods adımı atlanıyor."
+          fi
 
       - name: Build archive
         env:
           IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
         run: |
-          xcodebuild \
-            -workspace ios/App/App.xcworkspace \
+          if [ -d "ios/App/App.xcworkspace" ]; then
+            XCODE_CONTAINER="-workspace ios/App/App.xcworkspace"
+          else
+            XCODE_CONTAINER="-project ios/App/App.xcodeproj"
+          fi
+          xcodebuild $XCODE_CONTAINER \
             -scheme App \
             -configuration Release \
             -archivePath ios/build/NarRehberi.xcarchive \
