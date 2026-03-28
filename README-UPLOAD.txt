@@ -1,23 +1,21 @@
-﻿GitHub'a yüklenecek temiz iOS paketi.
+﻿GitHub'a yüklenecek güncel iOS paketi.
 
-Bu klasörde şunlar var:
-- .github workflow ve iOS export dosyaları
-- ios native proje
-- gerekli scripts
-- Apple giriş ve push için kaynak kod değişiklikleri
-- package/capacitor/index metadata dosyaları
+Bu paket artık güncel index.html + tüm SRC klasörünü içerir.
 
 Bilerek dahil edilmeyenler:
+- ios/App/App/GoogleService-Info.plist
 - index.js
 - public/index.js
-- GoogleService-Info.plist (gizli olduğu için)
-- geçici _tmp_* dosyaları
+- _tmp_* dosyaları
 - zip/export artıkları
 
-GoogleService-Info.plist için:
-- public repoya yükleme
-- bunun yerine GitHub Secret kullan: GOOGLE_SERVICE_INFO_PLIST_BASE64
-
-Push edilecek branch/commit:
-- branch: codex/snapshot-2026-03-25-review
-- commit: f1b73a2
+GitHub secrets:
+- BUILD_CERTIFICATE_BASE64
+- P12_PASSWORD
+- BUILD_PROVISION_PROFILE_BASE64
+- KEYCHAIN_PASSWORD
+- IOS_TEAM_ID
+- GOOGLE_SERVICE_INFO_PLIST_BASE64
+- APPSTORE_CONNECT_KEY_ID
+- APPSTORE_CONNECT_ISSUER_ID
+- APPSTORE_CONNECT_API_KEY_BASE64
