@@ -24,12 +24,21 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Install GoogleService-Info.plist from secret
-        if: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 != '' }}
+      - name: Prepare GoogleService-Info.plist
         env:
           GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
         run: |
-          echo -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > ios/App/App/GoogleService-Info.plist
+          if [ -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" ]; then
+            echo -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > ios/App/App/GoogleService-Info.plist
+          elif [ -f "ios/App/App/GoogleService-Info.plist" ]; then
+            echo "Mevcut plist dosyasi kullanilacak."
+          elif [ -f "ios/App/App/GoogleService-Info.plist.template" ]; then
+            cp ios/App/App/GoogleService-Info.plist.template ios/App/App/GoogleService-Info.plist
+            echo "Uyari: secret yok, template plist kullanildi."
+          else
+            echo "GoogleService-Info.plist veya template bulunamadi."
+            exit 1
+          fi
 
       - name: Add iOS platform if missing
         run: |
@@ -69,7 +78,7 @@ jobs:
           if [ -f "Podfile" ]; then
             pod install --repo-update
           else
-            echo "Podfile yok, CocoaPods adımı atlanıyor."
+            echo "Podfile yok, CocoaPods adimi atlaniyor."
           fi
 
       - name: Build archive
@@ -98,19 +107,25 @@ jobs:
             -exportPath ios/build/export
 
       - name: Upload to TestFlight
-        if: ${{ secrets.APPSTORE_CONNECT_KEY_ID != '' && secrets.APPSTORE_CONNECT_ISSUER_ID != '' && secrets.APPSTORE_CONNECT_API_KEY_BASE64 != '' }}
         env:
           APPSTORE_CONNECT_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
           APPSTORE_CONNECT_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
           APPSTORE_CONNECT_API_KEY_BASE64: ${{ secrets.APPSTORE_CONNECT_API_KEY_BASE64 }}
         run: |
+          if [ -z "$APPSTORE_CONNECT_KEY_ID" ] || [ -z "$APPSTORE_CONNECT_ISSUER_ID" ] || [ -z "$APPSTORE_CONNECT_API_KEY_BASE64" ]; then
+            echo "App Store Connect secretlari eksik, TestFlight upload atlaniyor."
+            exit 0
+          fi
+
           mkdir -p "$HOME/private_keys"
           echo -n "$APPSTORE_CONNECT_API_KEY_BASE64" | base64 --decode > "$HOME/private_keys/AuthKey_${APPSTORE_CONNECT_KEY_ID}.p8"
+
           IPA_PATH=$(find ios/build/export -name "*.ipa" | head -n 1)
           if [ -z "$IPA_PATH" ]; then
             echo "IPA not found"
             exit 1
           fi
+
           xcrun altool \
             --upload-app \
             --type ios \
