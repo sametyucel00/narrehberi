@@ -1,4 +1,4 @@
-# iOS Release Secrets
+﻿# iOS Release Secrets
 
 `iOS Release` workflow'unun imzalı build ve TestFlight yükleme alabilmesi için aşağıdaki GitHub Actions secret'larını ekleyin.
 
@@ -14,6 +14,9 @@
   - CI keychain için geçici parola
 - `IOS_TEAM_ID`
   - Apple Developer Team ID
+- `GOOGLE_SERVICE_INFO_PLIST_BASE64`
+  - Firebase iOS için `GoogleService-Info.plist` dosyasının Base64 hali
+  - Bu secret varsa workflow build sırasında dosyayı otomatik oluşturur
 
 ## TestFlight upload secret'ları
 
@@ -40,6 +43,12 @@
 
 ```powershell
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\AuthKey_ABC123XYZ.p8"))
+```
+
+### `GoogleService-Info.plist`
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\GoogleService-Info.plist"))
 ```
 
 ## Not

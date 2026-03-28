@@ -51,6 +51,7 @@ import UserPanel from "./components/UserPanel.jsx";
 import BireyselIlanFormu from "./components/BireyselIlanFormu.jsx";
 import TheDateDoctor from "./components/DateDoctor.jsx";
 import TheBeniSasirt from "./components/BeniSasirt.jsx";
+import { registerPushNotifications } from "./services/pushNotifications";
 // ------------------------------------------------
 
 /* Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ TEMA Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ */
@@ -1015,7 +1016,8 @@ export default function App() {
         // Oturum aÃƒÂ§Ã„Â±ldÃ„Â±
         const docSnap = await getDoc(doc(db, "users", u.uid));
         let rol = "USER";
-        let ad = u.email.split("@")[0];
+        const email = u.email || "";
+        let ad = email ? email.split("@")[0] : (u.displayName || "Nar Kullanıcısı");
 
         if (docSnap.exists()) {
           const veri = docSnap.data();
@@ -1024,15 +1026,17 @@ export default function App() {
         } else {
           try {
             await setDoc(doc(db, "users", u.uid), {
-              email: u.email,
+              email: email,
               rol: "USER",
               ad_soyad: ad,
+              aktif: true,
+              appleSignIn: Array.isArray(u.providerData) && u.providerData.some((p) => p?.providerId === "apple.com"),
               olusturma_tarihi: new Date().toISOString()
             });
           } catch (e) { }
         }
 
-        setGoogleUser({ uid: u.uid, email: u.email, isim: ad, rol });
+        setGoogleUser({ uid: u.uid, email, isim: ad, rol });
       } else {
         setGoogleUser(null);
       }
@@ -1085,6 +1089,12 @@ export default function App() {
       }
     });
     return () => unsub();
+  }, [googleUser?.uid]);
+  useEffect(() => {
+    if (!googleUser?.uid) return;
+    registerPushNotifications(googleUser.uid).catch((error) => {
+      console.error("Push bildirim kaydı başarısız:", error);
+    });
   }, [googleUser?.uid]);
 
   useEffect(() => {
@@ -1208,6 +1218,8 @@ export default function App() {
     </div>
   );
 }
+
+
 
 
 

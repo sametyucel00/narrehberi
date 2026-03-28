@@ -1,29 +1,19 @@
-/**
- * ╔══════════════════════════════════════════════════════════════════╗
- * ║     NAR REHBERİ — AUTH GATEWAY (Giriş Kapısı - ONARILMIŞ)      ║
- * ║     AuthGateway.jsx                                             ║
- * ║                                                                  ║
- * ║     Düzeltme: onAuth tetiklendiğinde modal artık donmuyor.      ║
- * ╚══════════════════════════════════════════════════════════════════╝
- */
-
-import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { auth, db } from "../services/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { resolveAppleRedirectSession, signInWithApple } from "../services/appleAuth";
 
-// ─── SABITLER ────────────────────────────────────────────────────────────────
-
-const GOLD        = "#D4AF37";
-const GOLD_DIM    = "rgba(212,175,55,0.10)";
+const GOLD = "#D4AF37";
+const GOLD_DIM = "rgba(212,175,55,0.10)";
 const GOLD_BORDER = "rgba(212,175,55,0.22)";
-const SURFACE_1   = "#0d0d12";
-const SURFACE_2   = "#13131a";
-const SURFACE_3   = "#1c1c26";
-const TEXT_PRI    = "rgba(240,234,218,0.93)";
-const TEXT_MUT    = "rgba(180,170,150,0.55)";
-const DANGER      = "#c0604a";
+const SURFACE_1 = "#0d0d12";
+const SURFACE_2 = "#13131a";
+const SURFACE_3 = "#1c1c26";
+const TEXT_PRI = "rgba(240,234,218,0.93)";
+const TEXT_MUT = "rgba(180,170,150,0.55)";
+const DANGER = "#c0604a";
 
 const ADMIN_FALLBACKS = {
   DT_ADMIN: { email: "yonetim@antalyadevlettiyatrosu.gov.tr", sifre: "DT2025", ad: "Tiyatro Yetkilisi" },
@@ -31,44 +21,12 @@ const ADMIN_FALLBACKS = {
 };
 
 const ROLLER = [
-  {
-    id: "USER",
-    etiket: "Bireysel Üyelik",
-    altetiket: "Sinopsis dinle, mekan keşfet",
-    ikon: "◈",
-    renk: "#7090e0",
-  },
-  {
-    id: "DT_ADMIN",
-    etiket: "Kurumsal Giriş",
-    altetiket: "Devlet Tiyatrosu Yetkilisi",
-    ikon: "🎭",
-    renk: GOLD,
-  },
-  {
-    id: "KURUMSAL",
-    etiket: "Kurumsal Üyelik",
-    altetiket: "Kurumsal hesap ve ilan yönetimi",
-    ikon: "🏢",
-    renk: "#5fa8d3",
-  },
-  {
-    id: "ISLETME",
-    etiket: "İşletme Girişi",
-    altetiket: "Mekan, sadakat ve QR yönetimi",
-    ikon: "🍽",
-    renk: "#e07a5f",
-  },
-  {
-    id: "MASTER",
-    etiket: "Master Admin",
-    altetiket: "Nar Rehberi Kurucu Erişimi",
-    ikon: "⬡",
-    renk: "#a070d0",
-  },
+  { id: "USER", etiket: "Bireysel Üyelik", altetiket: "Sinopsis dinle, mekan keşfet", ikon: "◈", renk: "#7090e0" },
+  { id: "DT_ADMIN", etiket: "Kurumsal Giriş", altetiket: "Devlet Tiyatrosu Yetkilisi", ikon: "🎭", renk: GOLD },
+  { id: "KURUMSAL", etiket: "Kurumsal Üyelik", altetiket: "Kurumsal hesap ve ilan yönetimi", ikon: "🏢", renk: "#5fa8d3" },
+  { id: "ISLETME", etiket: "İşletme Girişi", altetiket: "Mekan, sadakat ve QR yönetimi", ikon: "🍽", renk: "#e07a5f" },
+  { id: "MASTER", etiket: "Master Admin", altetiket: "Nar Rehberi Kurucu Erişimi", ikon: "⬡", renk: "#a070d0" },
 ];
-
-// ─── YARDIMCILAR ─────────────────────────────────────────────────────────────
 
 function GoldLine({ delay = 0 }) {
   return (
@@ -138,28 +96,54 @@ function mapAuthError(error) {
 async function ensureUserDoc(user, payload) {
   const ref = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
+  const email = normalizeEmail(user.email);
   const base = {
     uid: user.uid,
-    email: normalizeEmail(user.email),
+    email,
     rol: payload.rol || "USER",
     aktif: true,
     olusturma_tarihi: snap.exists() ? snap.data().olusturma_tarihi || new Date().toISOString() : new Date().toISOString(),
   };
 
-  await setDoc(
-    ref,
-    {
-      ...base,
-      ...payload,
-    },
-    { merge: true },
-  );
-
+  await setDoc(ref, { ...base, ...payload }, { merge: true });
   const finalSnap = await getDoc(ref);
   return { uid: user.uid, id: user.uid, ...finalSnap.data() };
 }
 
-// ─── FORMLAR ─────────────────────────────────────────────────────────────────
+function SubmitButton({ onClick, yukleniyor, etiket, renk, dark = false }) {
+  return (
+    <motion.button
+      onClick={onClick}
+      whileHover={{ opacity: 0.88 }}
+      whileTap={{ scale: 0.97 }}
+      disabled={yukleniyor}
+      style={{
+        width: "100%",
+        padding: "14px",
+        borderRadius: 3,
+        cursor: yukleniyor ? "not-allowed" : "pointer",
+        background: dark ? `linear-gradient(135deg, ${renk}, #9a7820)` : `linear-gradient(135deg, ${renk}22, ${renk}44)`,
+        border: `1px solid ${renk}55`,
+        color: dark ? "#0a0a0f" : renk,
+        fontFamily: "'Cormorant Garamond', serif",
+        fontSize: 11,
+        fontWeight: 800,
+        letterSpacing: "0.2em",
+        textTransform: "uppercase",
+      }}
+    >
+      {yukleniyor ? "Doğrulanıyor..." : etiket}
+    </motion.button>
+  );
+}
+
+function AppleButton({ loading, onClick }) {
+  return (
+    <button onClick={onClick} disabled={loading} style={styles.appleBtn}>
+      {loading ? "Apple girişi hazırlanıyor..." : "Apple ile Devam Et"}
+    </button>
+  );
+}
 
 function UserForm({ onSuccess }) {
   const [mod, setMod] = useState("giris");
@@ -168,6 +152,7 @@ function UserForm({ onSuccess }) {
   const [ad, setAd] = useState("");
   const [hata, setHata] = useState("");
   const [yukleniyor, setYuk] = useState(false);
+  const [appleYukleniyor, setAppleYukleniyor] = useState(false);
 
   const gonder = async () => {
     const cleanEmail = normalizeEmail(email);
@@ -203,38 +188,43 @@ function UserForm({ onSuccess }) {
     }
   };
 
+  const appleGiris = async () => {
+    setHata("");
+    setAppleYukleniyor(true);
+    try {
+      const result = await signInWithApple();
+      if (result?.session) onSuccess(result.session);
+    } catch (error) {
+      setHata(error?.message || "Apple ile giriş sırasında bir hata oluştu.");
+    } finally {
+      setAppleYukleniyor(false);
+    }
+  };
+
   return (
     <div>
       <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
-        {["giris", "kayit"].map(m => (
-          <button key={m} onClick={() => setMod(m)}
-            style={{ ...styles.tabPill, ...(mod === m ? styles.tabPillActive : {}) }}>
+        {["giris", "kayit"].map((m) => (
+          <button key={m} onClick={() => setMod(m)} style={{ ...styles.tabPill, ...(mod === m ? styles.tabPillActive : {}) }}>
             {m === "giris" ? "Giriş Yap" : "Üye Ol"}
           </button>
         ))}
       </div>
       <AnimatePresence mode="wait">
         <motion.div key={mod} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-          {mod === "kayit" && <InputField label="Adınız" value={ad} onChange={e => setAd(e.target.value)} placeholder="Kadir Yılmaz" />}
-          <InputField label="E-posta" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="ornek@mail.com" />
-          <InputField label="Şifre" type="password" value={sifre} onChange={e => setSifre(e.target.value)} placeholder="••••••••" />
+          {mod === "kayit" && <InputField label="Adınız" value={ad} onChange={(e) => setAd(e.target.value)} placeholder="Kadir Yılmaz" />}
+          <InputField label="E-posta" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ornek@mail.com" />
+          <InputField label="Şifre" type="password" value={sifre} onChange={(e) => setSifre(e.target.value)} placeholder="••••••••" />
         </motion.div>
       </AnimatePresence>
       {hata && <p style={styles.hata}>{hata}</p>}
-      <SubmitButton yukleniyor={yukleniyor} onClick={gonder} etiket={mod === "giris" ? "GİRİŞ YAP" : "HESAP OLUŞTUR"} renk="#7090e0" />
+      <SubmitButton yukleniyor={yukleniyor} onClick={gonder} etiket={mod === "giris" ? "Giriş Yap" : "Hesap Oluştur"} renk="#7090e0" />
+      <AppleButton loading={appleYukleniyor} onClick={appleGiris} />
     </div>
   );
 }
 
-function RoleAccountForm({
-  onSuccess,
-  role,
-  title,
-  helper,
-  submitLabel,
-  accent = GOLD,
-  companyLabel = "Firma / İşletme Adı",
-}) {
+function RoleAccountForm({ onSuccess, role, title, helper, submitLabel, accent = GOLD, companyLabel = "Firma / İşletme Adı" }) {
   const [mod, setMod] = useState("giris");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -297,12 +287,7 @@ function RoleAccountForm({
         ))}
       </div>
       {mod === "kayit" && (
-        <InputField
-          label={companyLabel}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={isBusiness ? "Nar Rehberi İşletmesi" : "Ad Soyad"}
-        />
+        <InputField label={companyLabel} value={name} onChange={(e) => setName(e.target.value)} placeholder={isBusiness ? "Nar Rehberi İşletmesi" : "Ad Soyad"} />
       )}
       <InputField label="E-posta" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ornek@mail.com" />
       <InputField label="Şifre" type="password" value={sifre} onChange={(e) => setSifre(e.target.value)} placeholder="••••••••" />
@@ -332,21 +317,13 @@ function DTAdminForm({ onSuccess }) {
         cred = await signInWithEmailAndPassword(auth, cleanEmail, sifre);
       } catch (error) {
         const fallback = ADMIN_FALLBACKS.DT_ADMIN;
-        if (
-          (error?.code === "auth/user-not-found" || error?.code === "auth/invalid-credential") &&
-          cleanEmail === fallback.email &&
-          sifre === fallback.sifre
-        ) {
+        if ((error?.code === "auth/user-not-found" || error?.code === "auth/invalid-credential") && cleanEmail === fallback.email && sifre === fallback.sifre) {
           cred = await createUserWithEmailAndPassword(auth, cleanEmail, sifre);
         } else {
           throw error;
         }
       }
-      const session = await ensureUserDoc(cred.user, {
-        rol: "DT_ADMIN",
-        ad_soyad: ADMIN_FALLBACKS.DT_ADMIN.ad,
-        aktif: true,
-      });
+      const session = await ensureUserDoc(cred.user, { rol: "DT_ADMIN", ad_soyad: ADMIN_FALLBACKS.DT_ADMIN.ad, aktif: true });
       onSuccess(session);
     } catch (error) {
       setHata(mapAuthError(error));
@@ -361,10 +338,10 @@ function DTAdminForm({ onSuccess }) {
         <span style={{ fontSize: 10, letterSpacing: "0.18em", color: GOLD }}>DEVLET TİYATROSU PROTOKOL ERİŞİMİ</span>
         <p style={{ fontSize: 11, color: TEXT_MUT, marginTop: 4 }}>Bu alan yalnızca yetkili tiyatro personeline açıktır.</p>
       </div>
-      <InputField label="Kurumsal E-posta" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="yetkili@devlettiyatrosu.gov.tr" />
-      <InputField label="Şifre" type="password" value={sifre} onChange={e => setSifre(e.target.value)} placeholder="••••••••" />
+      <InputField label="Kurumsal E-posta" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="yetkili@devlettiyatrosu.gov.tr" />
+      <InputField label="Şifre" type="password" value={sifre} onChange={(e) => setSifre(e.target.value)} placeholder="••••••••" />
       {hata && <p style={styles.hata}>{hata}</p>}
-      <SubmitButton yukleniyor={yukleniyor} onClick={gonder} etiket="KURUMSAL GİRİŞ" renk={GOLD} dark />
+      <SubmitButton yukleniyor={yukleniyor} onClick={gonder} etiket="Kurumsal Giriş" renk={GOLD} dark />
     </div>
   );
 }
@@ -378,36 +355,26 @@ function MasterForm({ onSuccess }) {
 
   const gonder = async () => {
     const cleanEmail = normalizeEmail(email);
-    if (!cleanEmail || !sifre || !kod) {
-      setHata("Tüm alanlar zorunludur.");
+    if (!cleanEmail || !sifre || !kod.trim()) {
+      setHata("E-posta, şifre ve doğrulama kodunu girin.");
       return;
     }
     setHata("");
     setYuk(true);
     try {
       const fallback = ADMIN_FALLBACKS.MASTER;
-      if (kod !== "NAR2025") {
-        throw { code: "master/invalid-2fa" };
-      }
+      if (kod !== "NAR2025") throw { code: "master/invalid-2fa" };
       let cred;
       try {
         cred = await signInWithEmailAndPassword(auth, cleanEmail, sifre);
       } catch (error) {
-        if (
-          (error?.code === "auth/user-not-found" || error?.code === "auth/invalid-credential") &&
-          cleanEmail === fallback.email &&
-          sifre === fallback.sifre
-        ) {
+        if ((error?.code === "auth/user-not-found" || error?.code === "auth/invalid-credential") && cleanEmail === fallback.email && sifre === fallback.sifre) {
           cred = await createUserWithEmailAndPassword(auth, cleanEmail, sifre);
         } else {
           throw error;
         }
       }
-      const session = await ensureUserDoc(cred.user, {
-        rol: "MASTER",
-        ad_soyad: fallback.ad,
-        aktif: true,
-      });
+      const session = await ensureUserDoc(cred.user, { rol: "MASTER", ad_soyad: fallback.ad, aktif: true });
       onSuccess(session);
     } catch (error) {
       setHata(error?.code === "master/invalid-2fa" ? "Doğrulama kodu hatalı." : mapAuthError(error));
@@ -422,70 +389,48 @@ function MasterForm({ onSuccess }) {
         <span style={{ fontSize: 10, letterSpacing: "0.18em", color: "#a070d0" }}>⬡ KURUCU ERİŞİM KATMANI</span>
         <p style={{ fontSize: 11, color: TEXT_MUT, marginTop: 4 }}>Bu kapı izlenmektedir.</p>
       </div>
-      <InputField label="E-posta" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="••••@narrehberi.com" />
-      <InputField label="Master Şifre" type="password" value={sifre} onChange={e => setSifre(e.target.value)} placeholder="••••••••" />
-      <InputField label="2FA Kodu" value={kod} onChange={e => setKod(e.target.value)} placeholder="NAR2025" />
+      <InputField label="E-posta" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="••••@narrehberi.com" />
+      <InputField label="Master Şifre" type="password" value={sifre} onChange={(e) => setSifre(e.target.value)} placeholder="••••••••" />
+      <InputField label="2FA Kodu" value={kod} onChange={(e) => setKod(e.target.value)} placeholder="NAR2025" />
       {hata && <p style={styles.hata}>{hata}</p>}
-      <SubmitButton yukleniyor={yukleniyor} onClick={gonder} etiket="MASTER ERİŞİM" renk="#a070d0" />
+      <SubmitButton yukleniyor={yukleniyor} onClick={gonder} etiket="Master Erişim" renk="#a070d0" />
     </div>
   );
 }
 
-function SubmitButton({ onClick, yukleniyor, etiket, renk, dark = false }) {
-  return (
-    <motion.button onClick={onClick} whileHover={{ opacity: 0.88 }} whileTap={{ scale: 0.97 }} disabled={yukleniyor}
-      style={{
-        width: "100%", padding: "14px", borderRadius: 3, cursor: yukleniyor ? "not-allowed" : "pointer",
-        background: dark ? `linear-gradient(135deg, ${renk}, #9a7820)` : `linear-gradient(135deg, ${renk}22, ${renk}44)`,
-        border: `1px solid ${renk}55`, color: dark ? "#0a0a0f" : renk,
-        fontFamily: "'Cormorant Garamond', serif", fontSize: 11, fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase",
-      }}>
-      {yukleniyor ? "Doğrulanıyor..." : etiket}
-    </motion.button>
-  );
-}
-
-// ─── ANA BİLEŞEN ─────────────────────────────────────────────────────────────
-
 export default function AuthGateway({ onClose, onAuth }) {
   const [aktifRol, setAktifRol] = useState("USER");
+  const [redirectHata, setRedirectHata] = useState("");
 
   const handleAuth = (session) => {
     onAuth(session);
-    // 🔥 DÜZELTME: onClose() buradan kaldırıldı. App.jsx görünümü değiştirecek.
   };
+
+  useEffect(() => {
+    let mounted = true;
+    resolveAppleRedirectSession()
+      .then((session) => {
+        if (mounted && session) handleAuth(session);
+      })
+      .catch((error) => {
+        if (mounted && error?.message) setRedirectHata(error.message);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const formMap = {
     USER: <UserForm onSuccess={handleAuth} />,
     DT_ADMIN: <DTAdminForm onSuccess={handleAuth} />,
-    KURUMSAL: (
-      <RoleAccountForm
-        onSuccess={handleAuth}
-        role="KURUMSAL"
-        title="KURUMSAL HESAP"
-        helper="Kurumsal ilan ve içerik yönetimi için hesap oluşturabilir veya giriş yapabilirsiniz."
-        submitLabel="KURUMSAL DEVAM ET"
-        accent="#5fa8d3"
-        companyLabel="Firma Adı"
-      />
-    ),
-    ISLETME: (
-      <RoleAccountForm
-        onSuccess={handleAuth}
-        role="ISLETME"
-        title="İŞLETME HESABI"
-        helper="Mekan, sadakat ve QR işlemleri için işletme hesabınızla devam edin."
-        submitLabel="İŞLETME GİRİŞİ"
-        accent="#e07a5f"
-        companyLabel="İşletme Adı"
-      />
-    ),
+    KURUMSAL: <RoleAccountForm onSuccess={handleAuth} role="KURUMSAL" title="KURUMSAL HESAP" helper="Kurumsal ilan ve içerik yönetimi için hesap oluşturabilir veya giriş yapabilirsiniz." submitLabel="Kurumsal Devam Et" accent="#5fa8d3" companyLabel="Firma Adı" />,
+    ISLETME: <RoleAccountForm onSuccess={handleAuth} role="ISLETME" title="İŞLETME HESABI" helper="Mekan, sadakat ve QR işlemleri için işletme hesabınızla devam edin." submitLabel="İşletme Girişi" accent="#e07a5f" companyLabel="İşletme Adı" />,
     MASTER: <MasterForm onSuccess={handleAuth} />,
   };
 
   return (
     <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={e => e.target === e.currentTarget && onClose()} style={styles.overlay}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={(e) => e.target === e.currentTarget && onClose()} style={styles.overlay}>
         <motion.div initial={{ opacity: 0, y: 28, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.96 }} style={styles.modal}>
           <button onClick={onClose} style={styles.closeBtn}>✕</button>
           <div style={{ marginBottom: 6 }}>
@@ -494,7 +439,7 @@ export default function AuthGateway({ onClose, onAuth }) {
           </div>
           <GoldLine delay={0.3} />
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 }}>
-            {ROLLER.map((rol, i) => (
+            {ROLLER.map((rol) => (
               <motion.button key={rol.id} onClick={() => setAktifRol(rol.id)} style={{ ...styles.rolBtn, ...(aktifRol === rol.id ? { background: `${rol.renk}12`, borderColor: `${rol.renk}44` } : {}) }}>
                 <span style={{ fontSize: 16, minWidth: 24 }}>{rol.ikon}</span>
                 <div style={{ flex: 1, textAlign: "left" }}>
@@ -505,6 +450,7 @@ export default function AuthGateway({ onClose, onAuth }) {
             ))}
           </div>
           <div style={styles.formArea}>
+            {redirectHata && <p style={{ ...styles.hata, marginTop: 0 }}>{redirectHata}</p>}
             <AnimatePresence mode="wait">
               <motion.div key={aktifRol} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
                 {formMap[aktifRol]}
@@ -529,4 +475,5 @@ const styles = {
   tabPillActive: { background: GOLD_DIM, borderColor: GOLD, color: GOLD },
   kurumBox: { background: SURFACE_2, border: `1px solid ${GOLD_BORDER}`, borderRadius: 3, padding: "14px 16px", marginBottom: 20 },
   hata: { fontSize: 11, color: DANGER, marginBottom: 14, padding: "8px", background: "rgba(192,96,74,0.08)", border: "1px solid rgba(192,96,74,0.2)" },
+  appleBtn: { width: "100%", padding: "13px 14px", borderRadius: 3, cursor: "pointer", marginTop: 12, background: "linear-gradient(135deg, #ffffff, #d9d9d9)", border: "1px solid rgba(255,255,255,0.28)", color: "#111", fontFamily: "'Cormorant Garamond', serif", fontSize: 11, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase" },
 };

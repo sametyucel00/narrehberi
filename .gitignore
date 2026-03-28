@@ -29,3 +29,10 @@ ios/build
 DerivedData
 *.xcuserstate
 xcuserdata/
+ios/App/App/GoogleService-Info.plist
+_tmp_*
+manual-upload-ios-final
+manual-upload-ios-final.zip
+manual-upload-ios-kit
+manual-upload-ios-kit.zip
+hostinger-export-2026-03-19.zip
