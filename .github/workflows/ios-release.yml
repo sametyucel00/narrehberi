@@ -1,4 +1,4 @@
-name: iOS Release Clean
+name: iOS Release
 
 on:
   workflow_dispatch:
@@ -52,11 +52,42 @@ jobs:
       - name: Sync Capacitor iOS
         run: npx cap sync ios
 
-      - name: Verify regenerated iOS project
+      - name: Replace CapApp-SPM with minimal package
         run: |
-          echo "CLEAN_IOS_REBUILD_PIPELINE_ACTIVE"
-          ls -la ios/App/App.xcodeproj
+          cat > ios/App/CapApp-SPM/Package.swift <<'EOF'
+          // swift-tools-version: 5.9
+          import PackageDescription
+
+          // DO NOT MODIFY THIS FILE - managed by workflow for release safety
+          let package = Package(
+              name: "CapApp-SPM",
+              platforms: [.iOS(.v15)],
+              products: [
+                  .library(
+                      name: "CapApp-SPM",
+                      targets: ["CapApp-SPM"])
+              ],
+              dependencies: [
+                  .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.3.0")
+              ],
+              targets: [
+                  .target(
+                      name: "CapApp-SPM",
+                      dependencies: [
+                          .product(name: "Capacitor", package: "capacitor-swift-pm"),
+                          .product(name: "Cordova", package: "capacitor-swift-pm")
+                      ]
+                  )
+              ]
+          )
+          EOF
+
+      - name: Verify safe iOS project
+        run: |
+          echo "SAFE_IOS_RELEASE_PIPELINE_ACTIVE"
           head -n 5 ios/App/App.xcodeproj/project.pbxproj
+          echo "---"
+          cat ios/App/CapApp-SPM/Package.swift
 
       - name: Prepare GoogleService-Info.plist
         env:
@@ -66,9 +97,6 @@ jobs:
             echo -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > ios/App/App/GoogleService-Info.plist
           elif [ -f "ios/App/App/GoogleService-Info.plist.template" ]; then
             cp ios/App/App/GoogleService-Info.plist.template ios/App/App/GoogleService-Info.plist
-            echo "Secret yok, template plist kullanildi."
-          else
-            echo "GoogleService-Info.plist secret veya template bulunamadi."
           fi
 
       - name: Set automatic build number
@@ -109,15 +137,6 @@ jobs:
           PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" "$PROFILE_PLIST")
           echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
           echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
-
-      - name: Install CocoaPods if Podfile exists
-        run: |
-          cd ios/App
-          if [ -f "Podfile" ]; then
-            pod install --repo-update
-          else
-            echo "Podfile yok, CocoaPods adimi atlaniyor."
-          fi
 
       - name: Build archive
         env:
@@ -200,7 +219,7 @@ jobs:
       - name: Upload IPA artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ios-release-ipa-clean
+          name: ios-release-ipa
           path: |
             ios/build/NarRehberi.xcarchive
             ios/build/export
