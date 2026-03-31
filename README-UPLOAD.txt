@@ -1,21 +1,19 @@
-﻿GitHub'a yüklenecek güncel iOS paketi.
+﻿GitHub'a iOS build/release için yüklenecek dosyalar:
 
-Bu paket artık güncel index.html + tüm SRC klasörünü içerir.
+1. index.html
+2. capacitor.config.json
+3. app.metadata.json
+4. .github/workflows/ios-build.yml
+5. .github/workflows/ios-release.yml
+6. .github/ios/ExportOptions-AppStore.plist
+7. ios/App/App/Info.plist
+8. ios/App/App.xcodeproj/project.pbxproj
 
-Bilerek dahil edilmeyenler:
-- ios/App/App/GoogleService-Info.plist
-- index.js
-- public/index.js
-- _tmp_* dosyaları
-- zip/export artıkları
+Yükleme sonrası:
+- önce iOS Build
+- sonra iOS Release
 
-GitHub secrets:
-- BUILD_CERTIFICATE_BASE64
-- P12_PASSWORD
-- BUILD_PROVISION_PROFILE_BASE64
-- KEYCHAIN_PASSWORD
-- IOS_TEAM_ID
-- GOOGLE_SERVICE_INFO_PLIST_BASE64
-- APPSTORE_CONNECT_KEY_ID
-- APPSTORE_CONNECT_ISSUER_ID
-- APPSTORE_CONNECT_API_KEY_BASE64
+Notlar:
+- Bundle ID: com.narrehberi.app
+- Support URL / Privacy URL bu paketin parçası değil
+- GoogleService-Info.plist public repoya koyma
