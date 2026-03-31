@@ -74,8 +74,10 @@ jobs:
             echo "Source icon not found. Checked: ${CANDIDATES[*]}"
             exit 1
           fi
-          sips -z 1024 1024 "$SRC_ICON" --out "$DST_ICON" >/dev/null
-          echo "iOS app icon regenerated from: $SRC_ICON"
+          TMP_JPG="$RUNNER_TEMP/appicon-1024-noalpha.jpg"
+          sips -z 1024 1024 "$SRC_ICON" --setProperty format jpeg --out "$TMP_JPG" >/dev/null
+          sips --setProperty format png "$TMP_JPG" --out "$DST_ICON" >/dev/null
+          echo "iOS app icon regenerated from: $SRC_ICON (alpha removed)"
 
       - name: Replace CapApp-SPM with minimal package
         run: |
