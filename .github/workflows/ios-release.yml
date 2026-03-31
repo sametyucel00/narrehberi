@@ -54,14 +54,28 @@ jobs:
 
       - name: Force iOS app icon from Android source
         run: |
-          SRC_ICON="android/app/src/main/ic_launcher-playstore.png"
           DST_ICON="ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png"
-          if [ ! -f "$SRC_ICON" ]; then
-            echo "Source icon not found: $SRC_ICON"
+          CANDIDATES=(
+            "android/app/src/main/ic_launcher-playstore.png"
+            "logo.png"
+            "public/logo.png"
+            "SRC/assets/logo.png"
+            "public/favicon.png"
+            "favicon.png"
+          )
+          SRC_ICON=""
+          for c in "${CANDIDATES[@]}"; do
+            if [ -f "$c" ]; then
+              SRC_ICON="$c"
+              break
+            fi
+          done
+          if [ -z "$SRC_ICON" ]; then
+            echo "Source icon not found. Checked: ${CANDIDATES[*]}"
             exit 1
           fi
           sips -z 1024 1024 "$SRC_ICON" --out "$DST_ICON" >/dev/null
-          echo "iOS app icon regenerated from Android source."
+          echo "iOS app icon regenerated from: $SRC_ICON"
 
       - name: Replace CapApp-SPM with minimal package
         run: |
