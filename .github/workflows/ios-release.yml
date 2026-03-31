@@ -24,30 +24,46 @@ jobs:
       - name: Build web app
         run: npm run build
 
+      - name: Back up custom iOS assets
+        run: |
+          mkdir -p "$RUNNER_TEMP/ios-custom"
+          if [ -d "ios/App/App/Assets.xcassets" ]; then
+            cp -R ios/App/App/Assets.xcassets "$RUNNER_TEMP/ios-custom/Assets.xcassets"
+          fi
+          if [ -f "ios/App/App/GoogleService-Info.plist.template" ]; then
+            cp ios/App/App/GoogleService-Info.plist.template "$RUNNER_TEMP/ios-custom/GoogleService-Info.plist.template"
+          fi
+
+      - name: Regenerate clean iOS project
+        run: |
+          rm -rf ios
+          npx cap add ios
+
+      - name: Restore custom iOS assets
+        run: |
+          if [ -d "$RUNNER_TEMP/ios-custom/Assets.xcassets" ]; then
+            rm -rf ios/App/App/Assets.xcassets
+            cp -R "$RUNNER_TEMP/ios-custom/Assets.xcassets" ios/App/App/Assets.xcassets
+          fi
+          if [ -f "$RUNNER_TEMP/ios-custom/GoogleService-Info.plist.template" ]; then
+            cp "$RUNNER_TEMP/ios-custom/GoogleService-Info.plist.template" ios/App/App/GoogleService-Info.plist.template
+          fi
+
+      - name: Sync Capacitor iOS
+        run: npx cap sync ios
+
       - name: Prepare GoogleService-Info.plist
         env:
           GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
         run: |
           if [ -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" ]; then
             echo -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > ios/App/App/GoogleService-Info.plist
-          elif [ -f "ios/App/App/GoogleService-Info.plist" ]; then
-            echo "Mevcut plist dosyasi kullanilacak."
           elif [ -f "ios/App/App/GoogleService-Info.plist.template" ]; then
             cp ios/App/App/GoogleService-Info.plist.template ios/App/App/GoogleService-Info.plist
-            echo "Uyari: secret yok, template plist kullanildi."
+            echo "Secret yok, template plist kullanildi."
           else
-            echo "GoogleService-Info.plist veya template bulunamadi."
-            exit 1
+            echo "GoogleService-Info.plist secret veya template bulunamadi."
           fi
-
-      - name: Add iOS platform if missing
-        run: |
-          if [ ! -d "ios/App" ]; then
-            npx cap add ios
-          fi
-
-      - name: Sync Capacitor iOS
-        run: npx cap sync ios
 
       - name: Set automatic build number
         env:
@@ -56,44 +72,7 @@ jobs:
           echo "Using iOS build number: $IOS_BUILD_NUMBER"
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $IOS_BUILD_NUMBER" ios/App/App/Info.plist
           perl -0pi -e "s/CURRENT_PROJECT_VERSION = \\d+;/CURRENT_PROJECT_VERSION = $ENV{IOS_BUILD_NUMBER};/g" ios/App/App.xcodeproj/project.pbxproj
-
-      - name: Sanitize Xcode project files
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          files = [
-              Path("ios/App/App.xcodeproj/project.pbxproj"),
-              Path("ios/App/App/Info.plist"),
-              Path("ios/App/App/capacitor.config.json"),
-          ]
-          for path in files:
-              data = path.read_bytes()
-              if data.startswith(b"\xef\xbb\xbf"):
-                  data = data[3:]
-              path.write_bytes(data)
-              print(f"Sanitized {path}")
-          PY
-
-      - name: Reset Xcode workspace metadata
-        run: |
-          rm -rf ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
-          mkdir -p ios/App/App.xcodeproj/project.xcworkspace/xcshareddata
-          cat > ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist <<'PLIST'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>IDEDidComputeMac32BitWarning</key>
-            <true/>
-          </dict>
-          </plist>
-          PLIST
-
-      - name: Resolve Swift package dependencies
-        run: |
-          xcodebuild -resolvePackageDependencies \
-            -project ios/App/App.xcodeproj \
-            -scheme App
+          perl -0pi -e "s/MARKETING_VERSION = [^;]+;/MARKETING_VERSION = 1.0.0;/g" ios/App/App.xcodeproj/project.pbxproj
 
       - name: Install signing assets
         env:
@@ -118,10 +97,12 @@ jobs:
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           cp "$PP_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/"
 
-          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print UUID' /dev/stdin <<< "$(security cms -D -i "$PP_PATH")")
-          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print Name' /dev/stdin <<< "$(security cms -D -i "$PP_PATH")")
-          echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
-          echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
+          PROFILE_PLIST="$RUNNER_TEMP/profile.plist"
+          security cms -D -i "$PP_PATH" > "$PROFILE_PLIST"
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" "$PROFILE_PLIST")
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" "$PROFILE_PLIST")
+          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
 
       - name: Install CocoaPods if Podfile exists
         run: |
@@ -136,12 +117,8 @@ jobs:
         env:
           IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
         run: |
-          if [ -d "ios/App/App.xcworkspace" ]; then
-            XCODE_CONTAINER="-workspace ios/App/App.xcworkspace"
-          else
-            XCODE_CONTAINER="-project ios/App/App.xcodeproj"
-          fi
-          xcodebuild $XCODE_CONTAINER \
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
             -scheme App \
             -configuration Release \
             -archivePath ios/build/NarRehberi.xcarchive \
@@ -154,10 +131,37 @@ jobs:
 
       - name: Export IPA
         run: |
+          APP_ID=$(node -p "JSON.parse(require('fs').readFileSync('capacitor.config.json','utf8')).appId")
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>destination</key>
+            <string>export</string>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${APP_ID}</key>
+              <string>${PROFILE_NAME}</string>
+            </dict>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+
           mkdir -p ios/build/export
           xcodebuild -exportArchive \
             -archivePath ios/build/NarRehberi.xcarchive \
-            -exportOptionsPlist .github/ios/ExportOptions-AppStore.plist \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
             -exportPath ios/build/export
 
       - name: Upload to TestFlight
