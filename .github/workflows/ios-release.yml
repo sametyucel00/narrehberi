@@ -1,4 +1,4 @@
-name: iOS Release
+name: iOS Release Clean
 
 on:
   workflow_dispatch:
@@ -200,7 +200,7 @@ jobs:
       - name: Upload IPA artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ios-release-ipa
+          name: ios-release-ipa-clean
           path: |
             ios/build/NarRehberi.xcarchive
             ios/build/export
