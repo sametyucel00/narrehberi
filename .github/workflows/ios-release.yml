@@ -49,6 +49,15 @@ jobs:
       - name: Sync Capacitor iOS
         run: npx cap sync ios
 
+      - name: Set automatic build number
+        env:
+          IOS_BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          echo "Using iOS build number: $IOS_BUILD_NUMBER"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $IOS_BUILD_NUMBER" ios/App/App/Info.plist
+          perl -0pi -e "s/CURRENT_PROJECT_VERSION = \\d+;/CURRENT_PROJECT_VERSION = $ENV{IOS_BUILD_NUMBER};/g" ios/App/App.xcodeproj/project.pbxproj
+          node -e "const fs=require('fs'); const p='app.metadata.json'; const data=JSON.parse(fs.readFileSync(p,'utf8')); data.buildNumber=process.env.IOS_BUILD_NUMBER; fs.writeFileSync(p, JSON.stringify(data, null, 2)+'\\n');"
+
       - name: Install signing assets
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
