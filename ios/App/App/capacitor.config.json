@@ -1,13 +1,7 @@
 {
-	"appId": "narrehberi.com",
+	"appId": "com.narrehberi.app",
 	"appName": "Nar Rehberi",
 	"webDir": "dist",
 	"bundledWebRuntime": false,
-	"ios": {
-		"contentInset": "automatic",
-		"allowsLinkPreview": false
-	},
-	"packageClassList": [
-		"PushNotificationsPlugin"
-	]
+	"packageClassList": []
 }
