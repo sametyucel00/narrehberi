@@ -1,4 +1,4 @@
-﻿name: iOS Release
+name: iOS Release
 
 on:
   workflow_dispatch:
@@ -24,21 +24,114 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Install GoogleService-Info.plist from secret
-        if: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 != '' }}
-        env:
-          GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
+      - name: Back up custom iOS assets
         run: |
-          echo -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > ios/App/App/GoogleService-Info.plist
+          mkdir -p "$RUNNER_TEMP/ios-custom"
+          if [ -d "ios/App/App/Assets.xcassets" ]; then
+            cp -R ios/App/App/Assets.xcassets "$RUNNER_TEMP/ios-custom/Assets.xcassets"
+          fi
+          if [ -f "ios/App/App/GoogleService-Info.plist.template" ]; then
+            cp ios/App/App/GoogleService-Info.plist.template "$RUNNER_TEMP/ios-custom/GoogleService-Info.plist.template"
+          fi
 
-      - name: Add iOS platform if missing
+      - name: Regenerate clean iOS project
         run: |
-          if [ ! -d "ios/App" ]; then
-            npx cap add ios
+          rm -rf ios
+          npx cap add ios
+
+      - name: Restore custom iOS assets
+        run: |
+          if [ -d "$RUNNER_TEMP/ios-custom/Assets.xcassets" ]; then
+            rm -rf ios/App/App/Assets.xcassets
+            cp -R "$RUNNER_TEMP/ios-custom/Assets.xcassets" ios/App/App/Assets.xcassets
+          fi
+          if [ -f "$RUNNER_TEMP/ios-custom/GoogleService-Info.plist.template" ]; then
+            cp "$RUNNER_TEMP/ios-custom/GoogleService-Info.plist.template" ios/App/App/GoogleService-Info.plist.template
           fi
 
       - name: Sync Capacitor iOS
         run: npx cap sync ios
+
+      - name: Force iOS app icon from Android source
+        run: |
+          DST_ICON="ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png"
+          CANDIDATES=(
+            "android/app/src/main/ic_launcher-playstore.png"
+            "logo.png"
+            "public/logo.png"
+            "SRC/assets/logo.png"
+            "public/favicon.png"
+            "favicon.png"
+          )
+          SRC_ICON=""
+          for c in "${CANDIDATES[@]}"; do
+            if [ -f "$c" ]; then
+              SRC_ICON="$c"
+              break
+            fi
+          done
+          if [ -z "$SRC_ICON" ]; then
+            echo "Source icon not found. Checked: ${CANDIDATES[*]}"
+            exit 1
+          fi
+          TMP_JPG="$RUNNER_TEMP/appicon-1024-noalpha.jpg"
+          sips -z 1024 1024 "$SRC_ICON" --setProperty format jpeg --out "$TMP_JPG" >/dev/null
+          sips --setProperty format png "$TMP_JPG" --out "$DST_ICON" >/dev/null
+          echo "iOS app icon regenerated from: $SRC_ICON (alpha removed)"
+
+      - name: Replace CapApp-SPM with minimal package
+        run: |
+          cat > ios/App/CapApp-SPM/Package.swift <<'EOF'
+          // swift-tools-version: 5.9
+          import PackageDescription
+
+          // DO NOT MODIFY THIS FILE - managed by workflow for release safety
+          let package = Package(
+              name: "CapApp-SPM",
+              platforms: [.iOS(.v15)],
+              products: [
+                  .library(
+                      name: "CapApp-SPM",
+                      targets: ["CapApp-SPM"])
+              ],
+              dependencies: [
+                  .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.3.0")
+              ],
+              targets: [
+                  .target(
+                      name: "CapApp-SPM",
+                      dependencies: [
+                          .product(name: "Capacitor", package: "capacitor-swift-pm"),
+                          .product(name: "Cordova", package: "capacitor-swift-pm")
+                      ]
+                  )
+              ]
+          )
+          EOF
+
+      - name: Verify safe iOS project
+        run: |
+          echo "SAFE_IOS_RELEASE_PIPELINE_ACTIVE"
+          head -n 5 ios/App/App.xcodeproj/project.pbxproj
+          echo "---"
+          cat ios/App/CapApp-SPM/Package.swift
+
+      - name: Prepare GoogleService-Info.plist
+        env:
+          GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
+        run: |
+          if [ -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" ]; then
+            echo -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > ios/App/App/GoogleService-Info.plist
+          elif [ -f "ios/App/App/GoogleService-Info.plist.template" ]; then
+            cp ios/App/App/GoogleService-Info.plist.template ios/App/App/GoogleService-Info.plist
+          fi
+
+      - name: Set automatic build number
+        env:
+          IOS_BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          echo "Using iOS build number: $IOS_BUILD_NUMBER"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $IOS_BUILD_NUMBER" ios/App/App/Info.plist
 
       - name: Install signing assets
         env:
@@ -63,52 +156,94 @@ jobs:
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           cp "$PP_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/"
 
-      - name: Install CocoaPods
-        run: |
-          cd ios/App
-          pod install --repo-update
+          PROFILE_PLIST="$RUNNER_TEMP/profile.plist"
+          security cms -D -i "$PP_PATH" > "$PROFILE_PLIST"
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" "$PROFILE_PLIST")
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" "$PROFILE_PLIST")
+          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
 
       - name: Build archive
         env:
           IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+          IOS_BUILD_NUMBER: ${{ github.run_number }}
         run: |
           xcodebuild \
-            -workspace ios/App/App.xcworkspace \
+            -project ios/App/App.xcodeproj \
             -scheme App \
             -configuration Release \
             -archivePath ios/build/NarRehberi.xcarchive \
             DEVELOPMENT_TEAM="$IOS_TEAM_ID" \
-            -allowProvisioningUpdates \
+            CURRENT_PROJECT_VERSION="$IOS_BUILD_NUMBER" \
+            MARKETING_VERSION="1.0.0" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            PROVISIONING_PROFILE="$PROFILE_UUID" \
             archive
 
       - name: Export IPA
         run: |
+          APP_ID=$(node -e "const fs=require('fs'); const raw=fs.readFileSync('capacitor.config.json','utf8').replace(/^\\uFEFF/, ''); process.stdout.write(JSON.parse(raw).appId);")
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>destination</key>
+            <string>export</string>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${APP_ID}</key>
+              <string>${PROFILE_NAME}</string>
+            </dict>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+
           mkdir -p ios/build/export
           xcodebuild -exportArchive \
             -archivePath ios/build/NarRehberi.xcarchive \
-            -exportOptionsPlist .github/ios/ExportOptions-AppStore.plist \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
             -exportPath ios/build/export
 
       - name: Upload to TestFlight
-        if: ${{ secrets.APPSTORE_CONNECT_KEY_ID != '' && secrets.APPSTORE_CONNECT_ISSUER_ID != '' && secrets.APPSTORE_CONNECT_API_KEY_BASE64 != '' }}
         env:
           APPSTORE_CONNECT_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
           APPSTORE_CONNECT_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
           APPSTORE_CONNECT_API_KEY_BASE64: ${{ secrets.APPSTORE_CONNECT_API_KEY_BASE64 }}
         run: |
+          if [ -z "$APPSTORE_CONNECT_KEY_ID" ] || [ -z "$APPSTORE_CONNECT_ISSUER_ID" ] || [ -z "$APPSTORE_CONNECT_API_KEY_BASE64" ]; then
+            echo "App Store Connect secretlari eksik, TestFlight upload yapilamadi."
+            exit 1
+          fi
+
           mkdir -p "$HOME/private_keys"
           echo -n "$APPSTORE_CONNECT_API_KEY_BASE64" | base64 --decode > "$HOME/private_keys/AuthKey_${APPSTORE_CONNECT_KEY_ID}.p8"
+
           IPA_PATH=$(find ios/build/export -name "*.ipa" | head -n 1)
           if [ -z "$IPA_PATH" ]; then
             echo "IPA not found"
             exit 1
           fi
+
           xcrun altool \
             --upload-app \
             --type ios \
             --file "$IPA_PATH" \
             --apiKey "$APPSTORE_CONNECT_KEY_ID" \
             --apiIssuer "$APPSTORE_CONNECT_ISSUER_ID"
+          echo "TestFlight upload komutu basarili bitti."
 
       - name: Upload IPA artifacts
         uses: actions/upload-artifact@v4

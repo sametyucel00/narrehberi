@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { db, auth } from "../services/firebase";
-import { doc, onSnapshot, updateDoc, collection, query, where, orderBy, addDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, getDocs, updateDoc, collection, query, where, addDoc, serverTimestamp } from "firebase/firestore";
 import ProfileSettings from "./ProfileSettings";
 import PayTRPayment from "./PayTRPayment";
+
+const WEB_EXTERNAL_PAYMENTS_ENABLED = false;
 
 const GOLD = "#D4AF37";
 const GOLD_BORDER = "rgba(212,175,55,0.22)";
@@ -13,6 +15,11 @@ const SURFACE_3 = "#1a1a24";
 const TEXT_PRI = "rgba(240,234,218,0.93)";
 const TEXT_MUT = "rgba(180,170,150,0.50)";
 const SUCCESS = "#7090e0";
+
+const sortByTimestampDesc = (items) => {
+    const getTime = (item) => item?.timestamp?.toMillis?.() ?? 0;
+    return [...items].sort((a, b) => getTime(b) - getTime(a));
+};
 
 export default function UserPanel({ session, onCikis, onKapat }) {
     const [tab, setTab] = useState("PROFILE"); // PROFILE | QUESTS | DATE | SURPRISE | ACH | STORE | ORDERS | SETTINGS
@@ -27,22 +34,35 @@ export default function UserPanel({ session, onCikis, onKapat }) {
     useEffect(() => {
         const u = auth.currentUser;
         if (!u) return;
-        const unsub = onSnapshot(doc(db, "users", u.uid), (docSnap) => {
-            if (docSnap.exists()) {
-                setUserData({ id: docSnap.id, ...docSnap.data() });
+        let active = true;
+
+        (async () => {
+            try {
+                const [userSnap, reservationSnap, surpriseSnap, paymentSnap] = await Promise.all([
+                    getDoc(doc(db, "users", u.uid)),
+                    getDocs(query(collection(db, "date_doctor_reservations"), where("userId", "==", u.uid))),
+                    getDocs(query(collection(db, "surprise_logs"), where("userId", "==", u.uid))),
+                    getDocs(query(collection(db, "payments"), where("userId", "==", u.uid))),
+                ]);
+
+                if (!active) return;
+
+                if (userSnap.exists()) {
+                    setUserData({ id: userSnap.id, ...userSnap.data() });
+                }
+
+                setReservations(sortByTimestampDesc(reservationSnap.docs.map((d) => ({ id: d.id, ...d.data() }))));
+                setSurprises(sortByTimestampDesc(surpriseSnap.docs.map((d) => ({ id: d.id, ...d.data() }))));
+                setPayments(sortByTimestampDesc(paymentSnap.docs.map((d) => ({ id: d.id, ...d.data() }))));
+            } catch (error) {
+                console.error("User panel data load error:", error);
+                if (active) {
+                    setBildirim("Veriler yüklenirken bir sorun oluştu. Lütfen tekrar deneyin.");
+                }
             }
-        });
+        })();
 
-        const qRes = query(collection(db, "date_doctor_reservations"), where("userId", "==", u.uid), orderBy("timestamp", "desc"));
-        const unsubRes = onSnapshot(qRes, (snap) => setReservations(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
-
-        const qSurp = query(collection(db, "surprise_logs"), where("userId", "==", u.uid), orderBy("timestamp", "desc"));
-        const unsubSurp = onSnapshot(qSurp, (snap) => setSurprises(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
-
-        const qPay = query(collection(db, "payments"), where("userId", "==", u.uid), orderBy("timestamp", "desc"));
-        const unsubPay = onSnapshot(qPay, (snap) => setPayments(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
-
-        return () => { unsub(); unsubRes(); unsubSurp(); unsubPay(); };
+        return () => { active = false; };
     }, []);
 
     const handlePuanSatinAl = async (puanMiktari, fiyat) => {
@@ -132,14 +152,14 @@ export default function UserPanel({ session, onCikis, onKapat }) {
                 marginBottom: 24,
                 paddingBottom: 4
             }}>
-                <button onClick={() => setTab("PROFILE")} style={{ padding: "10px 4px", background: tab === "PROFILE" ? `${SUCCESS}22` : SURFACE_2, border: `1px solid ${tab === "PROFILE" ? SUCCESS : GOLD_BORDER}`, color: tab === "PROFILE" ? SUCCESS : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>??</span>Puan ve QR</button>
-                <button onClick={() => setTab("QUESTS")} style={{ padding: "10px 4px", background: tab === "QUESTS" ? `${GOLD}22` : SURFACE_2, border: `1px solid ${tab === "QUESTS" ? GOLD : GOLD_BORDER}`, color: tab === "QUESTS" ? GOLD : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>??</span>G?revler</button>
-                <button onClick={() => setTab("DATE")} style={{ padding: "10px 4px", background: tab === "DATE" ? `${GOLD}22` : SURFACE_2, border: `1px solid ${tab === "DATE" ? GOLD : GOLD_BORDER}`, color: tab === "DATE" ? GOLD : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>??</span>Date Doctor</button>
-                <button onClick={() => setTab("SURPRISE")} style={{ padding: "10px 4px", background: tab === "SURPRISE" ? "#e74c3c22" : SURFACE_2, border: `1px solid ${tab === "SURPRISE" ? "#e74c3c" : GOLD_BORDER}`, color: tab === "SURPRISE" ? "#e74c3c" : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>??</span>S?rprizler</button>
-                <button onClick={() => setTab("ACH")} style={{ padding: "10px 4px", background: tab === "ACH" ? `${SUCCESS}22` : SURFACE_2, border: `1px solid ${tab === "ACH" ? SUCCESS : GOLD_BORDER}`, color: tab === "ACH" ? SUCCESS : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>??</span>Rozetler</button>
-                <button onClick={() => setTab("STORE")} style={{ padding: "10px 4px", background: tab === "STORE" ? `${GOLD}22` : SURFACE_2, border: `1px solid ${tab === "STORE" ? GOLD : GOLD_BORDER}`, color: tab === "STORE" ? GOLD : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>???</span>Ma?aza</button>
-                <button onClick={() => setTab("ORDERS")} style={{ padding: "10px 4px", background: tab === "ORDERS" ? `${SUCCESS}22` : SURFACE_2, border: `1px solid ${tab === "ORDERS" ? SUCCESS : GOLD_BORDER}`, color: tab === "ORDERS" ? SUCCESS : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>??</span>Sipari?ler</button>
-                <button onClick={() => setTab("SETTINGS")} style={{ padding: "10px 4px", background: tab === "SETTINGS" ? `${GOLD}22` : SURFACE_2, border: `1px solid ${tab === "SETTINGS" ? GOLD : GOLD_BORDER}`, color: tab === "SETTINGS" ? GOLD : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>??</span>Ayarlar</button>
+                <button onClick={() => setTab("PROFILE")} style={{ padding: "10px 4px", background: tab === "PROFILE" ? `${SUCCESS}22` : SURFACE_2, border: `1px solid ${tab === "PROFILE" ? SUCCESS : GOLD_BORDER}`, color: tab === "PROFILE" ? SUCCESS : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>👤</span>Puan ve QR</button>
+                <button onClick={() => setTab("QUESTS")} style={{ padding: "10px 4px", background: tab === "QUESTS" ? `${GOLD}22` : SURFACE_2, border: `1px solid ${tab === "QUESTS" ? GOLD : GOLD_BORDER}`, color: tab === "QUESTS" ? GOLD : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>🎯</span>Görevler</button>
+                <button onClick={() => setTab("DATE")} style={{ padding: "10px 4px", background: tab === "DATE" ? `${GOLD}22` : SURFACE_2, border: `1px solid ${tab === "DATE" ? GOLD : GOLD_BORDER}`, color: tab === "DATE" ? GOLD : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>🗓️</span>Date Doctor</button>
+                <button onClick={() => setTab("SURPRISE")} style={{ padding: "10px 4px", background: tab === "SURPRISE" ? "#e74c3c22" : SURFACE_2, border: `1px solid ${tab === "SURPRISE" ? "#e74c3c" : GOLD_BORDER}`, color: tab === "SURPRISE" ? "#e74c3c" : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>🎲</span>Sürprizler</button>
+                <button onClick={() => setTab("ACH")} style={{ padding: "10px 4px", background: tab === "ACH" ? `${SUCCESS}22` : SURFACE_2, border: `1px solid ${tab === "ACH" ? SUCCESS : GOLD_BORDER}`, color: tab === "ACH" ? SUCCESS : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>🏅</span>Rozetler</button>
+                {WEB_EXTERNAL_PAYMENTS_ENABLED && <button onClick={() => setTab("STORE")} style={{ padding: "10px 4px", background: tab === "STORE" ? `${GOLD}22` : SURFACE_2, border: `1px solid ${tab === "STORE" ? GOLD : GOLD_BORDER}`, color: tab === "STORE" ? GOLD : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>🛍️</span>Mağaza</button>}
+                <button onClick={() => setTab("ORDERS")} style={{ padding: "10px 4px", background: tab === "ORDERS" ? `${SUCCESS}22` : SURFACE_2, border: `1px solid ${tab === "ORDERS" ? SUCCESS : GOLD_BORDER}`, color: tab === "ORDERS" ? SUCCESS : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>📦</span>Siparişler</button>
+                <button onClick={() => setTab("SETTINGS")} style={{ padding: "10px 4px", background: tab === "SETTINGS" ? `${GOLD}22` : SURFACE_2, border: `1px solid ${tab === "SETTINGS" ? GOLD : GOLD_BORDER}`, color: tab === "SETTINGS" ? GOLD : TEXT_MUT, borderRadius: 6, cursor: "pointer", fontSize: 10, fontWeight: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}><span>⚙️</span>Ayarlar</button>
             </div>
 
             {bildirim && <div style={{ background: "rgba(112,144,224,0.1)", border: `1px solid ${SUCCESS}`, padding: 12, borderRadius: 4, color: SUCCESS, fontSize: 12, marginBottom: 20 }}>{bildirim}</div>}
@@ -334,7 +354,7 @@ export default function UserPanel({ session, onCikis, onKapat }) {
                     </motion.div>
                 )}
 
-                {tab === "STORE" && (
+                {WEB_EXTERNAL_PAYMENTS_ENABLED && tab === "STORE" && (
                     <motion.div key="store" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                         <div style={{ background: `${GOLD}11`, border: `1px solid ${GOLD}40`, padding: 24, borderRadius: 8, marginBottom: 24 }}>
                             <h2 style={{ fontSize: 18, color: GOLD, margin: "0 0 8px" }}>Hoşgeldin Kampanyası</h2>
@@ -388,7 +408,7 @@ export default function UserPanel({ session, onCikis, onKapat }) {
                                                 color: p.status === 'SUCCESS' ? SUCCESS : p.status === 'FAILED' ? '#e74c3c' : '#f1c40f',
                                                 border: `1px solid ${p.status === 'SUCCESS' ? SUCCESS : p.status === 'FAILED' ? '#e74c3c' : '#f1c40f'}44`
                                             }}>
-                                                {p.status === 'SUCCESS' ? 'TAMAMLANDI' : p.status === 'FAILED' ? '0PTAL/HATA' : 'BEKL0YOR'}
+                                                {p.status === 'SUCCESS' ? 'TAMAMLANDI' : p.status === 'FAILED' ? 'İPTAL/HATA' : 'BEKLİYOR'}
                                             </div>
                                         </div>
                                     </div>
@@ -406,7 +426,7 @@ export default function UserPanel({ session, onCikis, onKapat }) {
             </AnimatePresence>
 
             <AnimatePresence>
-                {payTRDetails && (
+                {WEB_EXTERNAL_PAYMENTS_ENABLED && payTRDetails && (
                     <PayTRPayment
                         amount={payTRDetails.amount}
                         user={payTRDetails.user}

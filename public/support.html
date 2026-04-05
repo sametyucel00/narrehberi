@@ -1,0 +1,205 @@
+﻿<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B0D10" />
+  <meta name="description" content="Nar Rehberi kullanıcı destek ve iletişim sayfası." />
+  <title>Nar Rehberi | Destek</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0d10;
+      --card: rgba(17, 16, 28, 0.94);
+      --gold: #d4af37;
+      --gold-soft: rgba(212, 175, 55, 0.16);
+      --text: #e6eaf0;
+      --muted: rgba(230, 234, 240, 0.72);
+      --border: rgba(212, 175, 55, 0.22);
+      --success: #8fbc8f;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: radial-gradient(circle at top, rgba(212,175,55,0.10), transparent 34%), linear-gradient(180deg, #0b0d10 0%, #090b0e 100%);
+      color: var(--text);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page { width: 100%; max-width: 1080px; margin: 0 auto; padding: 32px 20px 48px; }
+    .hero, .card {
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: 0 16px 52px rgba(0,0,0,0.22);
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -120px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(212,175,55,0.18), transparent 70%);
+      pointer-events: none;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid rgba(212,175,55,0.35);
+      background: #151515;
+    }
+    h1 { margin: 0 0 10px; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.05; }
+    .lead { margin: 0; max-width: 760px; color: var(--muted); font-size: 1rem; line-height: 1.7; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--gold-soft);
+      border: 1px solid rgba(212,175,55,0.24);
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+    .card { grid-column: span 12; border-radius: 20px; padding: 22px; }
+    .card h2 { margin: 0 0 14px; color: var(--gold); font-size: 1.05rem; }
+    .card p, .card li { color: var(--muted); line-height: 1.7; font-size: 0.95rem; }
+    .card ul { margin: 0; padding-left: 18px; }
+    .contact-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .contact-item {
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(212,175,55,0.14);
+    }
+    .contact-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .notice { border-left: 3px solid var(--success); padding-left: 14px; }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .nav-links a {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(212,175,55,0.22);
+      background: rgba(255,255,255,0.02);
+    }
+    .footer { margin-top: 20px; padding: 16px 4px 0; color: rgba(230,234,240,0.56); font-size: 0.86rem; text-align: center; }
+    @media (min-width: 860px) {
+      .span-7 { grid-column: span 7; }
+      .span-5 { grid-column: span 5; }
+      .span-6 { grid-column: span 6; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="brand">
+        <img src="/logo.png" alt="Nar Rehberi logosu" />
+        <span>Nar Rehberi Destek Merkezi</span>
+      </div>
+      <h1>Kullanıcı destek ve iletişim sayfası</h1>
+      <p class="lead">Nar Rehberi uygulaması ve hizmetleriyle ilgili teknik sorun, hesap işlemleri, içerik düzeltme talepleri, işletme yönetimi, ilan işlemleri ve genel kullanıcı desteği için bu sayfadaki iletişim kanallarını kullanabilirsiniz.</p>
+      <div class="pill-row">
+        <span class="pill">Teknik Destek</span>
+        <span class="pill">Hesap ve Giriş İşlemleri</span>
+        <span class="pill">İşletme ve İçerik Yönetimi</span>
+      </div>
+      <div class="nav-links">
+        <a href="/privacy.html">Gizlilik Politikası</a>
+        <a href="https://narrehberi.com/" target="_blank" rel="noopener noreferrer">Ana Site</a>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card span-7">
+        <h2>İletişim Kanalları</h2>
+        <div class="contact-list">
+          <div class="contact-item">
+            <span class="contact-label">Destek E-postası</span>
+            <a href="mailto:bilgi@narrehberi.com">bilgi@narrehberi.com</a>
+          </div>
+          <div class="contact-item">
+            <span class="contact-label">Destek Telefonu</span>
+            <a href="tel:+908503027946">0850 302 79 46</a>
+          </div>
+          <div class="contact-item">
+            <span class="contact-label">Alternatif İletişim</span>
+            <a href="tel:+905469270306">0546 927 03 06</a>
+          </div>
+          <div class="contact-item">
+            <span class="contact-label">Web Sitesi</span>
+            <a href="https://narrehberi.com/" target="_blank" rel="noopener noreferrer">narrehberi.com</a>
+          </div>
+        </div>
+        <p style="margin-top:16px;"><strong style="color:#e6eaf0;">Yazışma Adresi:</strong><br />Fabrikalar Mah. Necip Nugay Cad. Sahil Güvenlik Lojmanları No:29 A4 Blok K:4 D:18 Kepez / Antalya</p>
+      </article>
+
+      <article class="card span-5">
+        <h2>Destek Kapsamı</h2>
+        <ul>
+          <li>Hesap oluşturma, giriş ve erişim sorunları</li>
+          <li>Profil, vitrin ve işletme görünürlüğü talepleri</li>
+          <li>İlan ve içerik düzenleme işlemleri</li>
+          <li>Şehir Nabzı, etkinlik ve yayın yönetimi talepleri</li>
+          <li>Teknik hata bildirimi ve kullanıcı yönlendirmesi</li>
+        </ul>
+      </article>
+
+      <article class="card span-6">
+        <h2>Destek Talebi Gönderirken</h2>
+        <ul>
+          <li>Kullandığınız hesap e-postasını belirtin.</li>
+          <li>Mümkünse cihaz modelini ve işletim sistemi sürümünü yazın.</li>
+          <li>Karşılaştığınız adımı kısa ve net biçimde açıklayın.</li>
+          <li>Gerekirse ekran görüntüsü veya ilgili işletme/ilan adını ekleyin.</li>
+        </ul>
+      </article>
+
+      <article class="card span-6">
+        <h2>Yanıt ve İnceleme Süresi</h2>
+        <p class="notice">Destek talepleri mümkün olan en kısa sürede değerlendirilir. İş günlerinde iletilen çoğu başvuru aynı gün veya takip eden iş günü içinde incelenir.</p>
+        <p>Acil olmayan profil ve içerik güncellemelerinde talebin ayrıntılı şekilde paylaşılması süreci hızlandırır.</p>
+      </article>
+
+      <article class="card span-12">
+        <h2>Kullanıcı Verileri ve Gizlilik</h2>
+        <p>Destek kapsamında paylaşılan iletişim, hesap ve kullanım bilgileri yalnızca talebinizi değerlendirmek, hesabınızı doğrulamak ve hizmet süreçlerini yürütmek amacıyla kullanılır. Veri işleme esasları için lütfen <a href="/privacy.html">Gizlilik Politikası</a> sayfasını inceleyin.</p>
+      </article>
+    </section>
+
+    <div class="footer">Nar Rehberi destek sayfası • Son güncelleme: 31 Mart 2026</div>
+  </main>
+</body>
+</html>

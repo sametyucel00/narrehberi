@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Ã¢•"Ã¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•ÂÃ¢•- 
  * Ã¢•'  NAR REHBERİ Ã¢â‚¬" ANA UYGULAMA v4                                   Ã¢•'
  * Ã¢•'  Ã¢Å“... Onboarding: HoÃ…Å¸ Geldiniz Ã¢â€ ' Dil Ã¢â€ ' Konum (3 adÃ„Â±m)             Ã¢•'
@@ -52,6 +52,7 @@ import BireyselIlanFormu from "./components/BireyselIlanFormu.jsx";
 import TheDateDoctor from "./components/DateDoctor.jsx";
 import TheBeniSasirt from "./components/BeniSasirt.jsx";
 import { registerPushNotifications } from "./services/pushNotifications";
+import { resolveAppleRedirectSession } from "./services/appleAuth";
 // ------------------------------------------------
 
 /* Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ TEMA Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬Ã¢"â‚¬ */
@@ -98,7 +99,7 @@ const TRANSLATIONS = {
     locTitle: "3 / 3 - KONUM",
     locHead: "Konumunuz",
     locSub: "En yakın Nar Seçimi deneyimleri için",
-    locBtn: "📍 KONUMU PAYLAŞ",
+    locBtn: "DEVAM ET",
     locOk: "✓ KONUM ALINDI",
     locWait: "⌛ Bekleniyor...",
     locSkip: "Konumsuz Devam Et",
@@ -126,7 +127,7 @@ const TRANSLATIONS = {
     locTitle: "3 / 3 - LOCATION",
     locHead: "Your location",
     locSub: "For the nearest Nar Selection experiences",
-    locBtn: "📍 SHARE LOCATION",
+    locBtn: "CONTINUE",
     locOk: "✓ LOCATION READY",
     locWait: "⌛ Waiting...",
     locSkip: "Continue without location",
@@ -154,7 +155,7 @@ const TRANSLATIONS = {
     locTitle: "3 / 3 - ЛОКАЦИЯ",
     locHead: "Ваше местоположение",
     locSub: "Для ближайших рекомендаций Nar",
-    locBtn: "📍 ПОДЕЛИТЬСЯ ЛОКАЦИЕЙ",
+    locBtn: "ДАЛЕЕ",
     locOk: "✓ ЛОКАЦИЯ ГОТОВА",
     locWait: "⌛ Подождите...",
     locSkip: "Продолжить без геолокации",
@@ -182,7 +183,7 @@ const TRANSLATIONS = {
     locTitle: "3 / 3 - STANDORT",
     locHead: "Ihr Standort",
     locSub: "Für die nächstgelegenen Nar-Auswahlen",
-    locBtn: "📍 STANDORT TEILEN",
+    locBtn: "WEITER",
     locOk: "✓ STANDORT AKTIV",
     locWait: "⌛ Bitte warten...",
     locSkip: "Ohne Standort fortfahren",
@@ -396,6 +397,7 @@ function OnboardingScreen({ onDone }) {
     const iste = () => {
       if (!navigator.geolocation) {
         setKonumDur("HATA");
+        setTimeout(() => onDone({ lang, coords: null }), 900);
         return;
       }
 
@@ -435,6 +437,7 @@ function OnboardingScreen({ onDone }) {
             (err2) => {
               console.error("Konum Kesin KapalÃ„Â±:", err2);
               setKonumDur("HATA");
+              setTimeout(() => onDone({ lang, coords: null }), 900);
             },
             { enableHighAccuracy: false, timeout: 5000, maximumAge: 10000 }
           );
@@ -453,7 +456,7 @@ function OnboardingScreen({ onDone }) {
           fontFamily: C.sans, fontSize: 10, color: C.gold,
           letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: 8
         }}>
-          {TRANSLATIONS[lang]?.locTitle || "3 / 3 ? KONUM"}
+          {TRANSLATIONS[lang]?.locTitle || "3 / 3 - KONUM"}
         </p>
 
         {/* Konum ikonu */}
@@ -511,16 +514,6 @@ function OnboardingScreen({ onDone }) {
             konumDur === "BEKLE_IZIN" ? (TRANSLATIONS[lang]?.locWait || "⌛ Bekleniyor...") :
               (TRANSLATIONS[lang]?.locBtn || "📍 KONUMU PAYLAŞ")}
         </motion.button>
-
-        <button onClick={() => onDone({ lang, coords: null })}
-          style={{
-            width: "100%", padding: "14px", background: "none",
-            border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4,
-            color: C.muted, fontFamily: C.sans, fontSize: 11,
-            cursor: "pointer", letterSpacing: "0.08em"
-          }}>
-          {TRANSLATIONS[lang]?.locSkip || "Konumsuz Devam Et"}
-        </button>
 
         <p style={{
           fontFamily: C.sans, fontSize: 9, color: "rgba(255,255,255,0.18)",
@@ -601,7 +594,7 @@ function NarHeader({ session, googleUser, onAdmin }) {
         <RotatingLogo size={22} style={{ filter: "drop-shadow(0 0 6px rgba(212,175,55,0.4))" }} />
         <span style={{ fontFamily: C.serif, fontSize: 18, color: C.gold, fontWeight: 600, letterSpacing: "0.10em" }}>NAR</span>
         <div style={{ width: 1, height: 14, background: "rgba(212,175,55,0.25)" }} />
-        <span style={{ fontFamily: C.sans, fontSize: 10, color: C.gold, opacity: 0.85, letterSpacing: "0.22em", fontWeight: 700 }}>REHBERÃ„Â°</span>
+        <span style={{ fontFamily: C.sans, fontSize: 10, color: C.gold, opacity: 0.85, letterSpacing: "0.22em", fontWeight: 700 }}>REHBERİ</span>
       </div>
 
       {/* Konum Aktif (Orta) - Sadece GeniÃ…Å¸ Ekranlarda */}
@@ -1008,6 +1001,32 @@ export default function App() {
   const [bireyselIlanlar, setBireyselIlanlar] = useState([]);
   const [viewMode, setViewMode] = useState("LIST"); // Global view mode: LIST | CARD
   const [liveVenues, setLiveVenues] = useState([]);
+
+  useEffect(() => {
+    let aktif = true;
+    resolveAppleRedirectSession()
+      .then((appleSession) => {
+        if (!aktif || !appleSession) return;
+        setSession((prev) => {
+          const next = { ...(prev || {}), ...appleSession };
+          saveSession(next);
+          return next;
+        });
+        setGoogleUser({
+          uid: appleSession.uid,
+          email: appleSession.email || "",
+          isim: appleSession.ad_soyad || appleSession.firma_adi || "Nar Kullanıcısı",
+          rol: appleSession.rol || "USER",
+        });
+        setView("VITRIN");
+      })
+      .catch((error) => {
+        console.error("Apple redirect çözümlenemedi:", error);
+      });
+    return () => {
+      aktif = false;
+    };
+  }, []);
 
   // Firebase Auth GerÃƒÂ§ek Dinleyici
   useEffect(() => {

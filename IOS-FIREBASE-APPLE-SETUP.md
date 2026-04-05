@@ -51,3 +51,4 @@ Push izin/kayıt sonrası:
 ```bash
 npm run ios:firebase:check
 ```
+

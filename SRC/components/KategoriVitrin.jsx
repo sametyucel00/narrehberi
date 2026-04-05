@@ -967,7 +967,6 @@ function FooterBlock() {
           Güvenli Altyapı
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 18 }}>
-          <FooterMeta icon="🔒" title="PayTR Güvenli Ödeme" subtitle="256-bit SSL · 3D Secure" />
           <FooterMeta icon="🧮" title="Kurumsal Destek Hattı" subtitle="NetGSM · SMS ve WhatsApp" />
           <FooterMeta icon="📧" title="E-Posta Adresi" subtitle="bilgi@narrehberi.com" />
           <FooterMeta icon="📍" title="Resmi Adres" subtitle="Kepez / ANTALYA" />
