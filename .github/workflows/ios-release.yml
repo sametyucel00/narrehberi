@@ -243,7 +243,6 @@ jobs:
             --file "$IPA_PATH" \
             --apiKey "$APPSTORE_CONNECT_KEY_ID" \
             --apiIssuer "$APPSTORE_CONNECT_ISSUER_ID"
-
           echo "TestFlight upload komutu basarili bitti."
 
       - name: Upload IPA artifacts
