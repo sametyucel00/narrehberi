@@ -28,6 +28,51 @@ const ROLLER = [
   { id: "MASTER", etiket: "Master Admin", altetiket: "Nar Rehberi Kurucu Erişimi", ikon: "⬡", renk: "#a070d0" },
 ];
 
+function AppleGlyph() {
+  return (
+    <svg width="14" height="17" viewBox="0 0 14 17" fill="none" aria-hidden="true">
+      <path
+        d="M11.707 9.069c.018 1.977 1.735 2.636 1.754 2.645-.015.046-.273.938-.902 1.858-.543.795-1.107 1.587-1.996 1.603-.873.016-1.154-.518-2.151-.518-.998 0-1.31.502-2.135.534-.858.032-1.513-.862-2.061-1.654C3.092 11.83 2.27 8.738 3.42 6.75c.572-.988 1.596-1.614 2.708-1.63.844-.016 1.641.566 2.151.566.509 0 1.464-.7 2.468-.597.42.018 1.599.17 2.355 1.277-.061.038-1.405.817-1.395 2.703ZM10.553 2.306C11.008 1.755 11.316.988 11.232.22c-.656.026-1.448.438-1.919.989-.42.483-.787 1.258-.689 2.001.732.057 1.47-.372 1.929-.904Z"
+        fill="#111111"
+      />
+    </svg>
+  );
+}
+
+function RoleIcon({ role }) {
+  const symbolMap = {
+    USER: "◉",
+    DT_ADMIN: "◭",
+    KURUMSAL: "▣",
+    ISLETME: "✦",
+    MASTER: "⬢",
+  };
+
+  return (
+    <span
+      style={{
+        minWidth: 30,
+        width: 30,
+        height: 30,
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "50%",
+        background: `${role.renk}18`,
+        border: `1px solid ${role.renk}55`,
+        color: role.renk,
+        boxShadow: `0 0 0 1px rgba(255,255,255,0.03) inset`,
+        fontSize: 15,
+        fontWeight: 700,
+        lineHeight: 1,
+        flexShrink: 0,
+      }}
+    >
+      {symbolMap[role.id] || role.ikon}
+    </span>
+  );
+}
+
 function GoldLine({ delay = 0 }) {
   return (
     <motion.div
@@ -140,7 +185,12 @@ function SubmitButton({ onClick, yukleniyor, etiket, renk, dark = false }) {
 function AppleButton({ loading, onClick }) {
   return (
     <button onClick={onClick} disabled={loading} style={styles.appleBtn}>
-      {loading ? "Apple girişi hazırlanıyor..." : "Apple ile Devam Et"}
+      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+        <span style={{ width: 20, height: 20, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", background: "rgba(17,17,17,0.08)" }}>
+          <AppleGlyph />
+        </span>
+        <span>{loading ? "Apple girişi hazırlanıyor..." : "Apple ile Devam Et"}</span>
+      </span>
     </button>
   );
 }
@@ -441,7 +491,7 @@ export default function AuthGateway({ onClose, onAuth }) {
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 }}>
             {ROLLER.map((rol) => (
               <motion.button key={rol.id} onClick={() => setAktifRol(rol.id)} style={{ ...styles.rolBtn, ...(aktifRol === rol.id ? { background: `${rol.renk}12`, borderColor: `${rol.renk}44` } : {}) }}>
-                <span style={{ fontSize: 16, minWidth: 24 }}>{rol.ikon}</span>
+                <RoleIcon role={rol} />
                 <div style={{ flex: 1, textAlign: "left" }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: aktifRol === rol.id ? rol.renk : TEXT_PRI }}>{rol.etiket}</div>
                   <div style={{ fontSize: 10, color: TEXT_MUT }}>{rol.altetiket}</div>
@@ -464,8 +514,8 @@ export default function AuthGateway({ onClose, onAuth }) {
 }
 
 const styles = {
-  overlay: { position: "fixed", inset: 0, background: "rgba(4,4,8,0.85)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 24 },
-  modal: { position: "relative", background: SURFACE_1, border: `1px solid ${GOLD_BORDER}`, borderRadius: 4, padding: "36px 32px", width: "100%", maxWidth: 460, boxShadow: "0 40px 100px rgba(0,0,0,0.8)" },
+  overlay: { position: "fixed", inset: 0, background: "rgba(4,4,8,0.85)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 24, overflowY: "auto" },
+  modal: { position: "relative", background: SURFACE_1, border: `1px solid ${GOLD_BORDER}`, borderRadius: 4, padding: "36px 32px", width: "100%", maxWidth: 460, maxHeight: "calc(100vh - 48px)", overflowY: "auto", boxShadow: "0 40px 100px rgba(0,0,0,0.8)" },
   closeBtn: { position: "absolute", top: 14, right: 16, background: "none", border: "none", cursor: "pointer", color: TEXT_MUT },
   rolBtn: { display: "flex", alignItems: "center", gap: 14, background: "none", border: `1px solid ${GOLD_BORDER}`, borderRadius: 3, padding: "12px 16px", cursor: "pointer", width: "100%" },
   formArea: { background: SURFACE_3, border: `1px solid ${GOLD_BORDER}`, borderRadius: 3, padding: "20px" },

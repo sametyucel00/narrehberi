@@ -20,6 +20,7 @@ const TEXT_MUTED = "rgba(180,170,150,0.65)";
 const SUCCESS = "#4caf7d";
 const DANGER = "#c05050";
 const NETGSM = "0850 302 79 46";
+const WEB_EXTERNAL_PAYMENTS_ENABLED = false;
 
 function getCleanTel(v) {
   if (!v) return null;
@@ -260,8 +261,8 @@ export default function VenueDetailCard({ venue, onClose }) {
 
   const event = isEvent(venue);
   const whatsappUrl = buildWhatsAppUrl(venue);
-  const hasEscrow = !!venue?.is_escrow;
-  const hasRezerv = !!venue?.rezervasyon_aktif && !event;
+  const hasEscrow = WEB_EXTERNAL_PAYMENTS_ENABLED && !!venue?.is_escrow;
+  const hasRezerv = WEB_EXTERNAL_PAYMENTS_ENABLED && !!venue?.rezervasyon_aktif && !event;
   const isTiyatroBilet = venue?.kategori === "SANAT_KULTUR" && venue?.bilet_url;
   const showWhatsApp = !isTiyatroBilet;
   const cover = getVenueCover(venue);

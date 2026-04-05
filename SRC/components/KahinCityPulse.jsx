@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import HaberlerTab from "./HaberlerTab";
 import { db } from "../services/firebase";
@@ -45,8 +45,8 @@ const REHBER_ICERIK = [
     icon: "🎓",
     renk: "#4a9abe",
     sorular: [
-      { q: "Özel ders öğretmeni arıyorum", a: "Antalya'da ilkokuldan üniversite hazırlığa kadar birçok branşta özel ders desteği bulunur. Öğretmen seçerken branş deneyimi, öğrenci seviyesiyle uyumu, yüz yüze veya online ders imkÃ¢nı ve ders programının sürdürülebilir olması mutlaka değerlendirilmelidir." },
-      { q: "Spor koçu ve antrenör bilgisi", a: "Kişisel antrenör veya spor koçu desteği; kilo verme, kondisyon artırma, kas geliştirme ya da sağlıklı yaşam hedefleri için tercih edilir. Antalya'da seçim yaparken eğitmenin uzmanlık alanı, çalıştığı salon veya açık alan imkÃ¢nları, bireysel program hazırlayıp hazırlamadığı ve sakatlık geçmişine uygun planlama yapması önemlidir." },
+      { q: "Özel ders öğretmeni arıyorum", a: "Antalya'da ilkokuldan üniversite hazırlığa kadar birçok branşta özel ders desteği bulunur. Öğretmen seçerken branş deneyimi, öğrenci seviyesiyle uyumu, yüz yüze veya online ders imkânı ve ders programının sürdürülebilir olması mutlaka değerlendirilmelidir." },
+      { q: "Spor koçu ve antrenör bilgisi", a: "Kişisel antrenör veya spor koçu desteği; kilo verme, kondisyon artırma, kas geliştirme ya da sağlıklı yaşam hedefleri için tercih edilir. Antalya'da seçim yaparken eğitmenin uzmanlık alanı, çalıştığı salon veya açık alan imkânları, bireysel program hazırlayıp hazırlamadığı ve sakatlık geçmişine uygun planlama yapması önemlidir." },
       { q: "Özel eğitim ve rehabilitasyon", a: "Özel eğitim ve rehabilitasyon hizmetleri; gelişimsel, bilişsel, fiziksel veya dil ve konuşma güçlüğü yaşayan bireylerin potansiyellerini en üst seviyeye çıkarmayı hedefler. Kurum seçiminde uzman kadronun tecrübesi, bireyselleştirilmiş eğitim programları ve ailenin sürece dahil edilmesi kritik rol oynar." }
     ]
   },
@@ -372,11 +372,11 @@ export function KahinTeaser({ onOpen, lang = "TR" }) {
           <motion.div animate={{ scale: pulse ? 3.2 : 1, opacity: pulse ? 0 : 0.45 }} transition={{ duration: 1.5 }} style={{ position: "absolute", inset: "-5px", borderRadius: "50%", border: `1px solid ${tt.gold}`, pointerEvents: "none" }} />
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
-          <span style={{ fontFamily: SANS, fontSize: "9px", letterSpacing: "0.22em", textTransform: "uppercase", color: tt.dim, display: "block", marginBottom: "4px" }}>{T.pulse} Â· {tt.label}</span>
+          <span style={{ fontFamily: SANS, fontSize: "9px", letterSpacing: "0.22em", textTransform: "uppercase", color: tt.dim, display: "block", marginBottom: "4px" }}>{T.pulse} · {tt.label}</span>
           <div style={{ overflow: "hidden", height: "24px" }}>
             <AnimatePresence mode="wait">
               <motion.span key={tickIdx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.45 }} style={{ fontFamily: SERIF, fontSize: "16px", color: TEXT, display: "block", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: "24px" }}>
-                {current ? `${current.icon}  ${current.isim}  ?  ${current.tarih}  ?  ${current.yer}` : `...  ${T.preparing}`}
+                {current ? `${current.icon}  ${current.isim}  ·  ${current.tarih}  ·  ${current.yer}` : `...  ${T.preparing}`}
               </motion.span>
             </AnimatePresence>
           </div>
@@ -592,9 +592,9 @@ export function KahinPanel({ onClose, ilanlar: ilanlarFromApp = [], lang = "TR",
       <div style={{ padding: "15px 20px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <span style={{ fontFamily: SERIF, fontSize: "17px", color: TEXT, letterSpacing: "0.04em" }}>Şehir Nabzı</span>
-          <span style={{ fontFamily: SANS, fontSize: "9px", color: tt.dim, letterSpacing: "0.18em", textTransform: "uppercase", display: "block", marginTop: "2px" }}>Antalya Â· {months[getMonth()]}</span>
+          <span style={{ fontFamily: SANS, fontSize: "9px", color: tt.dim, letterSpacing: "0.18em", textTransform: "uppercase", display: "block", marginTop: "2px" }}>Antalya · {months[getMonth()]}</span>
         </div>
-        <button onClick={onClose} style={{ background: "none", border: "none", color: TEXT_DIM, cursor: "pointer", fontSize: "16px", padding: "4px" }}>âœ•</button>
+        <button onClick={onClose} style={{ background: "none", border: "none", color: TEXT_DIM, cursor: "pointer", fontSize: "16px", padding: "4px" }}>✕</button>
       </div>
       <div style={{
         display: "flex", // Changed from grid for horizontal scroll
@@ -705,7 +705,7 @@ export function KahinPanel({ onClose, ilanlar: ilanlarFromApp = [], lang = "TR",
                   {selectedMonthLabel} ayı öncelikli gösteriliyor. Kategori seçince yalnızca bu ayın o kategorideki etkinlikleri görünür.
                 </div>
               </div>
-              {shownEvts.length === 0 ? <p style={{ fontFamily: SERIF, fontSize: "13px", color: TEXT_DIM, fontStyle: "italic", textAlign: "center", padding: "28px 0" }}>{selectedMonthLabel} ay?nda se?ili kategoride etkinlik bulunamad?...</p> : (
+              {shownEvts.length === 0 ? <p style={{ fontFamily: SERIF, fontSize: "13px", color: TEXT_DIM, fontStyle: "italic", textAlign: "center", padding: "28px 0" }}>{selectedMonthLabel} ayında seçili kategoride etkinlik bulunamadı...</p> : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                   {shownEvtsUpcoming.length > 0 && (
                     <div>
@@ -761,7 +761,7 @@ export function KahinPanel({ onClose, ilanlar: ilanlarFromApp = [], lang = "TR",
                                     </div>
                                   </div>
                                   <p style={{ fontFamily: SANS, fontSize: "10px", color: TEXT_DIM, margin: "4px 0 2px" }}>📍 {ev.yer}</p>
-                                  <p style={{ fontFamily: SANS, fontSize: "10px", color: tt.gold, margin: "0 0 4px" }}>🕐 {ev.tarih} Â· {ev.saat}</p>
+                                  <p style={{ fontFamily: SANS, fontSize: "10px", color: tt.gold, margin: "0 0 4px" }}>🕐 {ev.tarih} · {ev.saat}</p>
                                   {ev.adres && <p style={{ fontFamily: SANS, fontSize: "10px", color: TEXT_DIM, margin: "0 0 2px", lineHeight: 1.45 }}>🏠 {ev.adres}</p>}
                                   {ev.tel && <p style={{ fontFamily: SANS, fontSize: "10px", color: TEXT_DIM, margin: "0 0 8px", lineHeight: 1.45 }}>📞 {ev.tel}</p>}
                                 </div>
@@ -828,7 +828,7 @@ export function KahinPanel({ onClose, ilanlar: ilanlarFromApp = [], lang = "TR",
                                   </div>
                                 </div>
                                 <p style={{ fontFamily: SANS, fontSize: "10px", color: TEXT_DIM, margin: "4px 0 2px" }}>📍 {ev.yer}</p>
-                                <p style={{ fontFamily: SANS, fontSize: "10px", color: tt.gold, margin: "0 0 4px" }}>🕐 {ev.tarih} Â· {ev.saat}</p>
+                                <p style={{ fontFamily: SANS, fontSize: "10px", color: tt.gold, margin: "0 0 4px" }}>🕐 {ev.tarih} · {ev.saat}</p>
                                 {ev.adres && <p style={{ fontFamily: SANS, fontSize: "10px", color: TEXT_DIM, margin: "0 0 2px", lineHeight: 1.45 }}>🏠 {ev.adres}</p>}
                                 {ev.tel && <p style={{ fontFamily: SANS, fontSize: "10px", color: TEXT_DIM, margin: "0 0 8px", lineHeight: 1.45 }}>📞 {ev.tel}</p>}
                               </div>
@@ -936,7 +936,7 @@ export function KahinPanel({ onClose, ilanlar: ilanlarFromApp = [], lang = "TR",
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <button onClick={() => setSelCat(null)} style={{ background: "none", border: "none", color: GOLD_DIM, fontSize: "10px", cursor: "pointer", marginBottom: "12px" }}>← Kategoriler</button>
 
-                  {/* BAÅLIK VE İLANLAR (BAÅLIÄIN İÇİNDE İLANLAR) */}
+                  {/* BAŞLIK VE İLANLAR (BAŞLIĞIN İÇİNDE İLANLAR) */}
                   <div style={{ marginBottom: "20px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
                       <span style={{ fontSize: "24px" }}>{selCat.icon}</span>
@@ -1061,7 +1061,7 @@ export function KahinPanel({ onClose, ilanlar: ilanlarFromApp = [], lang = "TR",
           )}
         </AnimatePresence>
       </div>
-      <div style={{ padding: "10px", textAlign: "center", borderTop: `1px solid ${CARD_BOR}` }}><span style={{ fontSize: "8px", color: TEXT_DIM, letterSpacing: "2px" }}>KAHİN Â· NAR REHBERİ</span></div>
+      <div style={{ padding: "10px", textAlign: "center", borderTop: `1px solid ${CARD_BOR}` }}><span style={{ fontSize: "8px", color: TEXT_DIM, letterSpacing: "2px" }}>KAHİN · NAR REHBERİ</span></div>
     </motion.div>
   );
 }

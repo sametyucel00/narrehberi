@@ -1,12 +1,5 @@
-﻿Build number hatasi icin yüklenecek dosyalar:
+Bu klasor sadece son guncel committe GitHub'a yuklenmesi gereken dosyalari icerir.
 
-1. app.metadata.json
-2. ios/App/App/Info.plist
-3. ios/App/App.xcodeproj/project.pbxproj
-
-Değişiklik:
-- build number 1 -> 2
-- version 1.0.0 aynı kaldı
-
-Sonra tekrar:
-- iOS Release
+1. Buradaki dosyalari path yapisini koruyarak repoya yukle.
+2. DELETE-FILES.txt icindeki yollar repo'da varsa sil.
+3. github-* gibi yardimci klasorleri yukleme.

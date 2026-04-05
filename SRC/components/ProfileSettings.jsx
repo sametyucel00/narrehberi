@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { db, auth } from "../services/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from "firebase/auth";
 
 const GOLD = "#D4AF37";
 const GOLD_BORDER = "rgba(212,175,55,0.22)";
@@ -33,6 +33,7 @@ export default function ProfileSettings({ userRole }) {
         newPass: "",
         confirmPass: ""
     });
+    const [deleteConfirm, setDeleteConfirm] = useState("");
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -81,10 +82,10 @@ export default function ProfileSettings({ userRole }) {
             }
 
             await updateDoc(doc(db, "users", u.uid), updateData);
-            notify("basari", "Profil bilgileri baÅŸarÄ±yla gÃ¼ncellendi.");
+            notify("basari", "Profil bilgileri başarıyla güncellendi.");
         } catch (err) {
             console.error("Profile update failed:", err);
-            notify("hata", "Profil gÃ¼ncellenirken bir hata oluÅŸtu.");
+            notify("hata", "Profil güncellenirken bir hata oluştu.");
         } finally {
             setUpdating(false);
         }
@@ -93,10 +94,10 @@ export default function ProfileSettings({ userRole }) {
     const handlePasswordUpdate = async (e) => {
         e.preventDefault();
         if (passForm.newPass !== passForm.confirmPass) {
-            return notify("hata", "Yeni ÅŸifreler uyuÅŸmuyor.");
+            return notify("hata", "Yeni şifreler uyuşmuyor.");
         }
         if (passForm.newPass.length < 6) {
-            return notify("hata", "Åifre en az 6 karakter olmalÄ±dÄ±r.");
+            return notify("hata", "Şifre en az 6 karakter olmalıdır.");
         }
 
         setUpdating(true);
@@ -111,20 +112,47 @@ export default function ProfileSettings({ userRole }) {
             await updatePassword(user, passForm.newPass);
 
             setPassForm({ currentPass: "", newPass: "", confirmPass: "" });
-            notify("basari", "Åifreniz baÅŸarÄ±yla deÄŸiÅŸtirildi.");
+            notify("basari", "Şifreniz başarıyla değiştirildi.");
         } catch (err) {
             console.error("Password update failed:", err);
             if (err.code === "auth/wrong-password") {
-                notify("hata", "Mevcut ÅŸifreniz hatalÄ±.");
+                notify("hata", "Mevcut şifreniz hatalı.");
             } else {
-                notify("hata", "Åifre deÄŸiÅŸtirilirken bir hata oluÅŸtu.");
+                notify("hata", "Şifre değiştirilirken bir hata oluştu.");
             }
         } finally {
             setUpdating(false);
         }
     };
 
-    if (loading) return <div style={{ color: TEXT_MUT, textAlign: "center", padding: 40 }}>YÃ¼kleniyor...</div>;
+    const handleAccountDelete = async (e) => {
+        e.preventDefault();
+        if (deleteConfirm.trim().toUpperCase() !== "SIL") {
+            return notify("hata", "Hesap silme onayı için SIL yazmalısınız.");
+        }
+
+        setUpdating(true);
+        try {
+            const user = auth.currentUser;
+            if (!user) throw new Error("auth/no-current-user");
+
+            await deleteDoc(doc(db, "users", user.uid));
+            await deleteUser(user);
+            notify("basari", "Hesabınız silindi.");
+            setTimeout(() => window.location.reload(), 900);
+        } catch (err) {
+            console.error("Account delete failed:", err);
+            if (err?.code === "auth/requires-recent-login") {
+                notify("hata", "Hesabı silmek için lütfen yeniden giriş yapın ve tekrar deneyin.");
+            } else {
+                notify("hata", "Hesap silinirken bir hata oluştu.");
+            }
+        } finally {
+            setUpdating(false);
+        }
+    };
+
+    if (loading) return <div style={{ color: TEXT_MUT, textAlign: "center", padding: 40 }}>Yükleniyor...</div>;
 
     return (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 24, alignItems: "flex-start" }}>
@@ -144,15 +172,15 @@ export default function ProfileSettings({ userRole }) {
             {/* Profile Edit Section */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                 style={{ flex: "1 1 400px", background: SURFACE_2, padding: 24, borderRadius: 8, border: `1px solid ${GOLD_BORDER}` }}>
-                <h3 style={{ margin: "0 0 20px", color: GOLD, fontSize: 16, letterSpacing: "0.1em" }}>PROFÄ°L BÄ°LGÄ°LERÄ°</h3>
+                <h3 style={{ margin: "0 0 20px", color: GOLD, fontSize: 16, letterSpacing: "0.1em" }}>PROFİL BİLGİLERİ</h3>
 
                 <form onSubmit={handleProfileUpdate}>
                     <div style={styles.field}>
-                        <label style={styles.label}>E-POSTA (DeÄŸiÅŸtirilemez)</label>
+                        <label style={styles.label}>E-POSTA (Değiştirilemez)</label>
                         <input type="text" value={userData?.email || ""} disabled style={styles.inputDisabled} />
                     </div>
                     <div style={styles.field}>
-                        <label style={styles.label}>KULLANICI ADI (DeÄŸiÅŸtirilemez)</label>
+                        <label style={styles.label}>KULLANICI ADI (Değiştirilemez)</label>
                         <input type="text" value={userData?.kullanici_adi || ""} disabled style={styles.inputDisabled} />
                     </div>
 
@@ -168,7 +196,7 @@ export default function ProfileSettings({ userRole }) {
 
                     {(userRole === "KURUMSAL" || userRole === "ISLETME") && (
                         <div style={styles.field}>
-                            <label style={styles.label}>{userRole === "KURUMSAL" ? "F0RMA ADI" : "0^LETME ADI"}</label>
+                            <label style={styles.label}>{userRole === "KURUMSAL" ? "FİRMA ADI" : "İŞLETME ADI"}</label>
                             <input type="text" value={profileForm.firma_adi || profileForm.isletmeAdi}
                                 onChange={e => setProfileForm({ ...profileForm, [userRole === "KURUMSAL" ? "firma_adi" : "isletmeAdi"]: e.target.value })}
                                 style={styles.input} />
@@ -181,7 +209,7 @@ export default function ProfileSettings({ userRole }) {
                     </div>
 
                     <button type="submit" disabled={updating} style={styles.button}>
-                        {updating ? "GÃœNCELLENÄ°YOR..." : "PROFÄ°LÄ° GÃœNCELLE"}
+                        {updating ? "GÜNCELLENİYOR..." : "PROFİLİ GÜNCELLE"}
                     </button>
                 </form>
             </motion.div>
@@ -189,26 +217,42 @@ export default function ProfileSettings({ userRole }) {
             {/* Password Section */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
                 style={{ flex: "1 1 300px", background: SURFACE_2, padding: 24, borderRadius: 8, border: `1px solid ${GOLD_BORDER}` }}>
-                <h3 style={{ margin: "0 0 20px", color: GOLD, fontSize: 16, letterSpacing: "0.1em" }}>ÅÄ°FREYÄ° DEÄÄ°ÅTÄ°R</h3>
+                <h3 style={{ margin: "0 0 20px", color: GOLD, fontSize: 16, letterSpacing: "0.1em" }}>ŞİFREYİ DEĞİŞTİR</h3>
 
                 <form onSubmit={handlePasswordUpdate}>
                     <div style={styles.field}>
-                        <label style={styles.label}>MEVCUT ÅÄ°FRE</label>
+                        <label style={styles.label}>MEVCUT ŞİFRE</label>
                         <input type="password" required value={passForm.currentPass} onChange={e => setPassForm({ ...passForm, currentPass: e.target.value })} style={styles.input} />
                     </div>
                     <div style={styles.field}>
-                        <label style={styles.label}>YENÄ° ÅÄ°FRE</label>
+                        <label style={styles.label}>YENİ ŞİFRE</label>
                         <input type="password" required value={passForm.newPass} onChange={e => setPassForm({ ...passForm, newPass: e.target.value })} style={styles.input} />
                     </div>
                     <div style={styles.field}>
-                        <label style={styles.label}>YENÄ° ÅÄ°FRE TEKRAR</label>
+                        <label style={styles.label}>YENİ ŞİFRE TEKRAR</label>
                         <input type="password" required value={passForm.confirmPass} onChange={e => setPassForm({ ...passForm, confirmPass: e.target.value })} style={styles.input} />
                     </div>
 
                     <button type="submit" disabled={updating} style={{ ...styles.button, background: "transparent", border: `1px solid ${GOLD}` }}>
-                        {updating ? "Ä°ÅLENÄ°YOR..." : "ÅÄ°FREYÄ° GÃœNCELLE"}
+                        {updating ? "İŞLENİYOR..." : "ŞİFREYİ GÜNCELLE"}
                     </button>
                 </form>
+
+                <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${GOLD_BORDER}` }}>
+                    <h3 style={{ margin: "0 0 12px", color: DANGER, fontSize: 16, letterSpacing: "0.1em" }}>HESABI SİL</h3>
+                    <p style={{ margin: "0 0 12px", color: TEXT_MUT, fontSize: 12, lineHeight: 1.6 }}>
+                        Hesabınızı ve bu hesaba bağlı kullanıcı kaydını kalıcı olarak silmek için aşağıya <strong style={{ color: TEXT_PRI }}>SIL</strong> yazın.
+                    </p>
+                    <form onSubmit={handleAccountDelete}>
+                        <div style={styles.field}>
+                            <label style={styles.label}>ONAY METNİ</label>
+                            <input type="text" value={deleteConfirm} onChange={e => setDeleteConfirm(e.target.value)} style={styles.input} placeholder="SIL" />
+                        </div>
+                        <button type="submit" disabled={updating} style={{ ...styles.button, background: "transparent", border: `1px solid ${DANGER}`, color: DANGER }}>
+                            {updating ? "İŞLENİYOR..." : "HESABI SİL"}
+                        </button>
+                    </form>
+                </div>
             </motion.div>
         </div>
     );
