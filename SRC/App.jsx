@@ -395,13 +395,25 @@ function OnboardingScreen({ onDone }) {
   /* AdÃ„Â±m 2 Ã¢â‚¬" Konum */
   const StepKonum = () => {
     const iste = () => {
+      let tamamlandi = false;
+      const bitir = (nextState, payload, delay = 900) => {
+        if (tamamlandi) return;
+        tamamlandi = true;
+        setKonumDur(nextState);
+        setTimeout(() => onDone(payload), delay);
+      };
+
       if (!navigator.geolocation) {
-        setKonumDur("HATA");
-        setTimeout(() => onDone({ lang, coords: null }), 900);
+        bitir("HATA", { lang, coords: null });
         return;
       }
 
       setKonumDur("BEKLE_IZIN");
+
+      const failSafeTimer = setTimeout(() => {
+        console.warn("Konum istegi zamaninda tamamlanmadi, konumsuz devam ediliyor.");
+        bitir("HATA", { lang, coords: null });
+      }, 12000);
 
       const options = {
         enableHighAccuracy: true,
@@ -413,31 +425,26 @@ function OnboardingScreen({ onDone }) {
         (pos) => {
           const { latitude, longitude } = pos.coords;
           console.log("Konum OK:", latitude, longitude);
-          setKonumDur("OK");
-          setTimeout(() => {
-            onDone({
-              lang,
-              coords: { lat: latitude, lng: longitude }
-            });
+          clearTimeout(failSafeTimer);
+          bitir("OK", {
+            lang,
+            coords: { lat: latitude, lng: longitude }
           }, 800);
         },
         (err) => {
-          console.warn("Konum AlÃ„Â±namadÃ„Â±, tekrar deneniyor (dÃƒÂ¼Ã…Å¸ÃƒÂ¼k hassasiyet)...", err);
-          // Ã„Â°kinci deneme - DÃƒÂ¼Ã…Å¸ÃƒÂ¼k hassasiyetle
+          console.warn("Konum Alinamadi, tekrar deneniyor (dusuk hassasiyet)...", err);
           navigator.geolocation.getCurrentPosition(
             (pos) => {
-              setKonumDur("OK");
-              setTimeout(() => {
-                onDone({
-                  lang,
-                  coords: { lat: pos.coords.latitude, lng: pos.coords.longitude }
-                });
+              clearTimeout(failSafeTimer);
+              bitir("OK", {
+                lang,
+                coords: { lat: pos.coords.latitude, lng: pos.coords.longitude }
               }, 800);
             },
             (err2) => {
-              console.error("Konum Kesin KapalÃ„Â±:", err2);
-              setKonumDur("HATA");
-              setTimeout(() => onDone({ lang, coords: null }), 900);
+              console.error("Konum kesin olarak alinamadi:", err2);
+              clearTimeout(failSafeTimer);
+              bitir("HATA", { lang, coords: null });
             },
             { enableHighAccuracy: false, timeout: 5000, maximumAge: 10000 }
           );
@@ -445,6 +452,7 @@ function OnboardingScreen({ onDone }) {
         options
       );
     };
+
 
     return (
       <motion.div key="s2"
