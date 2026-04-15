@@ -1,4 +1,4 @@
-name: iOS Build
+﻿name: iOS Build
 
 on:
   workflow_dispatch:
@@ -7,7 +7,29 @@ on:
       - main
       - master
       - "codex/**"
+    paths:
+      - "ios/**"
+      - "public/**"
+      - "src/**"
+      - "SRC/**"
+      - "index.html"
+      - "index.js"
+      - "package.json"
+      - "package-lock.json"
+      - "capacitor.config.json"
+      - ".github/workflows/ios-build.yml"
   pull_request:
+    paths:
+      - "ios/**"
+      - "public/**"
+      - "src/**"
+      - "SRC/**"
+      - "index.html"
+      - "index.js"
+      - "package.json"
+      - "package-lock.json"
+      - "capacitor.config.json"
+      - ".github/workflows/ios-build.yml"
 
 jobs:
   build-ios:

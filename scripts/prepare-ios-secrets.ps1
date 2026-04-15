@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$CertificatePath,
     [string]$ProvisionProfilePath,
     [string]$ApiKeyPath,

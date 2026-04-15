@@ -1,11 +1,12 @@
-$checks = @(
+﻿$checks = @(
     @{ Name = "package.json"; Path = "package.json" },
     @{ Name = "capacitor.config.json"; Path = "capacitor.config.json" },
-    @{ Name = "iOS workflow"; Path = ".github/workflows/ios-build.yml" },
+    @{ Name = "iOS build workflow"; Path = ".github/workflows/ios-build.yml" },
     @{ Name = "iOS release workflow"; Path = ".github/workflows/ios-release.yml" },
     @{ Name = "ExportOptions"; Path = ".github/ios/ExportOptions-AppStore.plist" },
     @{ Name = "iOS Xcode project"; Path = "ios/App/App.xcodeproj/project.pbxproj" },
-    @{ Name = "iOS Info.plist"; Path = "ios/App/App/Info.plist" }
+    @{ Name = "iOS Info.plist"; Path = "ios/App/App/Info.plist" },
+    @{ Name = "GoogleService template"; Path = "ios/App/App/GoogleService-Info.plist.template" }
 )
 
 $failed = $false
@@ -25,6 +26,7 @@ foreach ($check in $checks) {
 
 Write-Host ""
 Write-Host "GitHub Secrets kontrol listesi:"
+Write-Host "- GOOGLE_SERVICE_INFO_PLIST_BASE64 (opsiyonel, repo template yoksa gerekli)"
 Write-Host "- BUILD_CERTIFICATE_BASE64"
 Write-Host "- P12_PASSWORD"
 Write-Host "- BUILD_PROVISION_PROFILE_BASE64"
