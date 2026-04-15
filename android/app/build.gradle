@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+def releaseStoreFile = System.getenv("ANDROID_KEYSTORE_PATH") ?: "narrehberi.jks"
+def releaseStorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: ""
+def releaseKeyAlias = System.getenv("ANDROID_KEY_ALIAS") ?: "key0"
+def releaseKeyPassword = System.getenv("ANDROID_KEY_PASSWORD") ?: ""
+def releaseKeystoreExists = file(releaseStoreFile).exists()
+
 android {
     namespace = "narrehberi.com"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -18,15 +24,19 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file('narrehberi.jks')
-            storePassword 'oyunordusu'
-            keyAlias 'key0'
-            keyPassword 'oyunordusu'
+            if (releaseKeystoreExists) {
+                storeFile file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
         }
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            if (releaseKeystoreExists) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
