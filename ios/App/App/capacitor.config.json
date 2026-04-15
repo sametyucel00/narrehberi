@@ -3,5 +3,11 @@
 	"appName": "Nar Rehberi",
 	"webDir": "dist",
 	"bundledWebRuntime": false,
-	"packageClassList": []
+	"ios": {
+		"contentInset": "automatic",
+		"allowsLinkPreview": false
+	},
+	"packageClassList": [
+		"PushNotificationsPlugin"
+	]
 }
