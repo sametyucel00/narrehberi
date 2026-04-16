@@ -2,9 +2,25 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="icon" type="image/png" href="./assets/favicon-CNTI0baJ-CNTI0baJ-CNTI0baJ.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0f0d18" />
+  <meta name="description" content="Nar Rehberi ile Antalya'da mekan, etkinlik, f&#305;rsat ve &#351;ehir &#246;nerilerini ke&#351;fedin. Yiyecek, tiyatro, kafe, bar ve otel se&#231;eneklerine h&#305;zl&#305; eri&#351;in." />
+  <meta name="keywords" content="Nar Rehberi, Antalya mekanlar, Antalya etkinlik, kafe, tiyatro, bar, otel, &#351;ehir rehberi" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="author" content="Nar Rehberi" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Nar Rehberi" />
+  <meta property="og:title" content="Nar Rehberi" />
+  <meta property="og:description" content="Antalya'da mekan, etkinlik ve f&#305;rsatlar&#305; Nar Rehberi ile ke&#351;fedin." />
+  <meta property="og:url" content="https://narrehberi.com/" />
+  <meta property="og:image" content="https://narrehberi.com/logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Nar Rehberi" />
+  <meta name="twitter:description" content="Antalya'da mekan, etkinlik ve f&#305;rsatlar&#305; Nar Rehberi ile ke&#351;fedin." />
+  <meta name="twitter:image" content="https://narrehberi.com/logo.png" />
+  <link rel="canonical" href="https://narrehberi.com/" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Nar Rehberi" />
@@ -15,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lexend:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
   <script
@@ -23,10 +39,159 @@
     defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAM7CBdHZjn2zK7-llRH3iZZqjk21MPJQY&libraries=geometry,places&loading=async"
   ></script>
-  <script type="module" src="./SRC/main.jsx"></script>
+  <link rel="modulepreload" crossorigin href="./assets/vendor-B7-ka-XE-C_BcjH8d-C_BcjH8d.js">
+  <link rel="modulepreload" crossorigin href="./assets/react-vendor-C1XDgtxj-CX9sjaM_-CX9sjaM_.js">
+  <link rel="modulepreload" crossorigin href="./assets/firebase-vendor-CNaLJatd-9b435b4d-9b435b4d.js">
+  <link rel="modulepreload" crossorigin href="./assets/firebase-firestore-QpiEGATw-bc3kZNBr-bc3kZNBr.js">
+  <link rel="modulepreload" crossorigin href="./assets/firebase-auth-CgY6bRRE-C3Zuw2By-C3Zuw2By.js">
+  <link rel="modulepreload" crossorigin href="./assets/firebase-storage-Bnzze7UX-uFkFq6mk-uFkFq6mk.js">
+  <link rel="modulepreload" crossorigin href="./assets/motion-vendor-C9AHXzR4-BINnNmLo-BINnNmLo.js">
+  <script type="module">
+    import * as XLSX from 'xlsx';
+    window.XLSX = XLSX;
+  </script>
+  <style>
+    :root {
+      --nar-a11y-scale: 1;
+      --nar-a11y-panel-bg: rgba(10, 8, 18, 0.96);
+      --nar-a11y-panel-border: rgba(212, 175, 55, 0.28);
+      --nar-a11y-panel-text: rgba(245, 239, 224, 0.96);
+      --nar-a11y-panel-muted: rgba(212, 175, 55, 0.72);
+      --nar-a11y-accent: #d4af37;
+      --nar-a11y-accent-strong: #f2c94c;
+      --nar-a11y-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
+    }
+    html[data-a11y-font='large'] { --nar-a11y-scale: 1.12; zoom: 1.12; }
+    html[data-a11y-dyslexic='true'] body,
+    html[data-a11y-dyslexic='true'] button,
+    html[data-a11y-dyslexic='true'] input,
+    html[data-a11y-dyslexic='true'] select,
+    html[data-a11y-dyslexic='true'] textarea {
+      font-family: 'Lexend', Inter, 'Segoe UI', sans-serif !important;
+      letter-spacing: 0.01em;
+      word-spacing: 0.05em;
+    }
+    html[data-a11y-contrast='high'] body { background: #050507 !important; color: #fff8de !important; }
+    html[data-a11y-contrast='high'] #root { filter: contrast(1.18) saturate(0.92); }
+    html[data-a11y-reduced-motion='true'] *,
+    html[data-a11y-reduced-motion='true'] *::before,
+    html[data-a11y-reduced-motion='true'] *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    .nar-a11y-launcher {
+      position: fixed; right: 16px; bottom: 18px; z-index: 2147483640; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-width: 54px; min-height: 54px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(212, 175, 55, 0.34);
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.14), rgba(15, 13, 24, 0.97)); color: var(--nar-a11y-panel-text);
+      box-shadow: var(--nar-a11y-shadow); backdrop-filter: blur(16px); cursor: pointer; font: 600 14px/1.1 Inter, 'Segoe UI', sans-serif; letter-spacing: 0.02em;
+    }
+    .nar-a11y-launcher:focus-visible, .nar-a11y-panel button:focus-visible { outline: 2px solid var(--nar-a11y-accent-strong); outline-offset: 3px; }
+    .nar-a11y-panel {
+      position: fixed; right: 16px; bottom: 82px; z-index: 2147483641; width: min(360px, calc(100vw - 24px)); padding: 16px; border-radius: 20px;
+      border: 1px solid var(--nar-a11y-panel-border); background: var(--nar-a11y-panel-bg); color: var(--nar-a11y-panel-text); box-shadow: var(--nar-a11y-shadow); backdrop-filter: blur(20px); font: 500 14px/1.45 Inter, 'Segoe UI', sans-serif;
+    }
+    .nar-a11y-panel[hidden] { display: none !important; }
+    .nar-a11y-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .nar-a11y-title { margin: 0; font: 700 16px/1.2 Inter, 'Segoe UI', sans-serif; color: var(--nar-a11y-panel-text); }
+    .nar-a11y-subtitle { margin: 4px 0 0; color: var(--nar-a11y-panel-muted); font-size: 12px; }
+    .nar-a11y-close { width: 34px; height: 34px; border-radius: 999px; border: 1px solid rgba(212, 175, 55, 0.22); background: rgba(255, 255, 255, 0.04); color: var(--nar-a11y-panel-text); cursor: pointer; }
+    .nar-a11y-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .nar-a11y-action, .nar-a11y-read {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 12px 14px; border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.18); background: rgba(255, 255, 255, 0.04); color: var(--nar-a11y-panel-text); cursor: pointer; text-align: left; font: 600 13px/1.25 Inter, 'Segoe UI', sans-serif;
+    }
+    .nar-a11y-read { margin-bottom: 10px; justify-content: center; background: linear-gradient(135deg, rgba(212, 175, 55, 0.16), rgba(255, 255, 255, 0.04)); }
+    .nar-a11y-action small { display: block; margin-top: 4px; color: var(--nar-a11y-panel-muted); font: 500 11px/1.35 Inter, 'Segoe UI', sans-serif; }
+    .nar-a11y-action.is-active, .nar-a11y-read.is-active { border-color: rgba(242, 201, 76, 0.6); background: rgba(212, 175, 55, 0.16); color: #fff7d6; }
+    .nar-a11y-footer { margin-top: 12px; font-size: 11px; color: var(--nar-a11y-panel-muted); }
+    .nar-a11y-live { position: fixed; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    @media (max-width: 640px) {
+      .nar-a11y-panel { right: 12px; bottom: 76px; width: calc(100vw - 24px); }
+      .nar-a11y-grid { grid-template-columns: 1fr; }
+      .nar-a11y-launcher { right: 12px; bottom: 12px; width: 56px; min-width: 56px; height: 56px; min-height: 56px; padding: 0; border-radius: 50%; gap: 0; }
+      .nar-a11y-launcher span:last-child { display: none; }
+    }
+  </style>
+  <script>
+    (() => {
+      const STORAGE_KEY = 'nar_accessibility_preferences_v1';
+      const defaultState = { contrast: false, largeFont: false, dyslexicFont: false, reducedMotion: false, speechActive: false };
+      const safeParse = (value) => { try { return value ? JSON.parse(value) : null; } catch { return null; } };
+      const state = Object.assign({}, defaultState, safeParse(localStorage.getItem(STORAGE_KEY)) || {});
+      const doc = document.documentElement;
+      const speech = window.speechSynthesis || null;
+      let panel; let launcher; let liveRegion;
+      const persist = () => { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); };
+      const announce = (message) => { if (liveRegion) liveRegion.textContent = message; };
+      const stopSpeech = () => { if (speech && speech.speaking) { speech.cancel(); } state.speechActive = false; syncUI(); };
+      const getReadableText = () => {
+        const selection = window.getSelection ? String(window.getSelection()).trim() : '';
+        if (selection) return selection;
+        const root = document.querySelector('main, [role="main"], #root');
+        const source = root || document.body;
+        return (source.innerText || '').replace(/\s+/g, ' ').replace(/Eri\u015filebilirlik ara\u00e7lar\u0131/g, '').trim().slice(0, 2400);
+      };
+      const startSpeech = () => {
+        if (!speech) { announce('Bu cihazda sesli okuma desteklenmiyor.'); return; }
+        const text = getReadableText();
+        if (!text) { announce('Okunacak metin bulunamad\u0131.'); return; }
+        speech.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'tr-TR'; utterance.rate = 0.95; utterance.pitch = 1;
+        utterance.onend = () => { state.speechActive = false; syncUI(); announce('Sesli okuma tamamland\u0131.'); };
+        utterance.onerror = () => { state.speechActive = false; syncUI(); announce('Sesli okuma ba\u015flat\u0131lamad\u0131.'); };
+        state.speechActive = true; syncUI(); speech.speak(utterance); announce('Sesli okuma ba\u015flat\u0131ld\u0131.');
+      };
+      const toggleSpeech = () => { if (state.speechActive) { stopSpeech(); announce('Sesli okuma durduruldu.'); } else { startSpeech(); } };
+      const applyState = () => { doc.dataset.a11yContrast = state.contrast ? 'high' : 'normal'; doc.dataset.a11yFont = state.largeFont ? 'large' : 'normal'; doc.dataset.a11yDyslexic = state.dyslexicFont ? 'true' : 'false'; doc.dataset.a11yReducedMotion = state.reducedMotion ? 'true' : 'false'; persist(); };
+      const syncUI = () => {
+        applyState(); if (!panel) return;
+        panel.querySelector('[data-action="contrast"]')?.classList.toggle('is-active', state.contrast);
+        panel.querySelector('[data-action="font"]')?.classList.toggle('is-active', state.largeFont);
+        panel.querySelector('[data-action="dyslexic"]')?.classList.toggle('is-active', state.dyslexicFont);
+        panel.querySelector('[data-action="motion"]')?.classList.toggle('is-active', state.reducedMotion);
+        panel.querySelector('[data-action="speech"]')?.classList.toggle('is-active', state.speechActive);
+        const speechLabel = panel.querySelector('[data-speech-label]'); if (speechLabel) speechLabel.textContent = state.speechActive ? 'Durdur' : 'Sesli Okuma';
+      };
+      const togglePanel = (force) => {
+        if (!panel) return; const shouldOpen = typeof force === 'boolean' ? force : panel.hidden; panel.hidden = !shouldOpen; launcher.setAttribute('aria-expanded', String(shouldOpen)); if (shouldOpen) { panel.querySelector('button')?.focus(); } else { launcher.focus(); }
+      };
+      const buildButton = ({ action, icon, title, detail, onClick }) => {
+        const button = document.createElement('button'); button.type = 'button'; button.className = action === 'speech' ? 'nar-a11y-read' : 'nar-a11y-action'; button.dataset.action = action;
+        button.innerHTML = action === 'speech' ? '<span>' + icon + ' <span data-speech-label>Sesli Okuma</span></span>' : '<span>' + icon + ' ' + title + '<small>' + detail + '</small></span><span aria-hidden="true">&#9673;</span>';
+        button.addEventListener('click', onClick); return button;
+      };
+      const init = () => {
+        liveRegion = document.createElement('div'); liveRegion.className = 'nar-a11y-live'; liveRegion.setAttribute('aria-live', 'polite'); document.body.appendChild(liveRegion);
+        launcher = document.createElement('button'); launcher.type = 'button'; launcher.className = 'nar-a11y-launcher'; launcher.setAttribute('aria-label', 'Eri\u015filebilirlik ara\u00e7lar\u0131n\u0131 a\u00e7'); launcher.setAttribute('aria-expanded', 'false'); launcher.innerHTML = '<span aria-hidden="true">&#9855;</span><span>Eri\u015filebilirlik</span>'; launcher.addEventListener('click', () => togglePanel());
+        panel = document.createElement('section'); panel.className = 'nar-a11y-panel'; panel.hidden = true; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Eri\u015filebilirlik ara\u00e7lar\u0131');
+        const head = document.createElement('div'); head.className = 'nar-a11y-head'; head.innerHTML = '<div><h2 class="nar-a11y-title">Eri\u015filebilirlik Ara\u00e7lar\u0131</h2><p class="nar-a11y-subtitle">Web ve mobil g\u00f6r\u00fcn\u00fcm i\u00e7in h\u0131zl\u0131 eri\u015fim ayarlar\u0131</p></div>';
+        const close = document.createElement('button'); close.type = 'button'; close.className = 'nar-a11y-close'; close.setAttribute('aria-label', 'Paneli kapat'); close.textContent = '\u2715'; close.addEventListener('click', () => togglePanel(false)); head.appendChild(close); panel.appendChild(head);
+        panel.appendChild(buildButton({ action: 'speech', icon: '&#128266;', onClick: toggleSpeech }));
+        const grid = document.createElement('div'); grid.className = 'nar-a11y-grid';
+        grid.appendChild(buildButton({ action: 'contrast', icon: '&#9681;', title: 'Y\u00fcksek Kontrast', detail: 'Renk fark\u0131n\u0131 g\u00fc\u00e7lendirir', onClick: () => { state.contrast = !state.contrast; syncUI(); announce(state.contrast ? 'Y\u00fcksek kontrast a\u00e7\u0131ld\u0131.' : 'Y\u00fcksek kontrast kapat\u0131ld\u0131.'); } }));
+        grid.appendChild(buildButton({ action: 'font', icon: 'A+', title: 'B\u00fcy\u00fck Yaz\u0131', detail: 'Metinleri b\u00fcy\u00fct\u00fcr', onClick: () => { state.largeFont = !state.largeFont; syncUI(); announce(state.largeFont ? 'B\u00fcy\u00fck yaz\u0131 a\u00e7\u0131ld\u0131.' : 'B\u00fcy\u00fck yaz\u0131 kapat\u0131ld\u0131.'); } }));
+        grid.appendChild(buildButton({ action: 'dyslexic', icon: 'Aa', title: 'Disleksi Dostu Font', detail: 'Okumay\u0131 kolayla\u015ft\u0131ran yaz\u0131 tipi', onClick: () => { state.dyslexicFont = !state.dyslexicFont; syncUI(); announce(state.dyslexicFont ? 'Disleksi dostu yaz\u0131 tipi a\u00e7\u0131ld\u0131.' : 'Disleksi dostu yaz\u0131 tipi kapat\u0131ld\u0131.'); } }));
+        grid.appendChild(buildButton({ action: 'motion', icon: '&#9208;', title: 'Daha Az Hareket', detail: 'Animasyonlar\u0131 azalt\u0131r', onClick: () => { state.reducedMotion = !state.reducedMotion; syncUI(); announce(state.reducedMotion ? 'Daha az hareket modu a\u00e7\u0131ld\u0131.' : 'Daha az hareket modu kapat\u0131ld\u0131.'); } }));
+        grid.appendChild(buildButton({ action: 'reset', icon: '&#8634;', title: 'S\u0131f\u0131rla', detail: 'T\u00fcm ayarlar\u0131 varsay\u0131lana d\u00f6nd\u00fcr\u00fcr', onClick: () => { stopSpeech(); Object.assign(state, defaultState); syncUI(); announce('Eri\u015filebilirlik ayarlar\u0131 s\u0131f\u0131rland\u0131.'); } }));
+        panel.appendChild(grid);
+        const footer = document.createElement('div'); footer.className = 'nar-a11y-footer'; footer.textContent = 'Sesli okumada \u00f6nce se\u00e7ili metin, se\u00e7im yoksa g\u00f6r\u00fcnen sayfa i\u00e7eri\u011fi okunur.'; panel.appendChild(footer);
+        document.body.appendChild(panel); document.body.appendChild(launcher);
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && panel && !panel.hidden) { togglePanel(false); } });
+        document.addEventListener('click', (event) => { if (!panel || panel.hidden) return; const target = event.target; if (!(target instanceof Node)) return; if (!panel.contains(target) && !launcher.contains(target)) { togglePanel(false); } });
+        if (speech) { window.addEventListener('beforeunload', stopSpeech); }
+        syncUI();
+      };
+      applyState();
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init, { once: true }); } else { init(); }
+    })();
+  </script>
+  <script type="module" crossorigin src="./assets/index-BxBdNbDn.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DjjCHafy.css">
 </head>
 <body>
   <div id="root"></div>
 </body>
 </html>
-

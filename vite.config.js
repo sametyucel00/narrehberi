@@ -1,36 +1,48 @@
-import { defineConfig } from 'vite'
+﻿import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { qrcode } from 'vite-plugin-qrcode'
 
-// https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const isWP = mode === 'wordpress';
 
   return {
-    // For WordPress, we use a relative path or a specific plugin path.
-    // Setting to './' allows it to work relative to the page it is embedded on, 
-    // BUT only if all assets are in the same relative structure.
     base: isWP ? '' : './',
     plugins: [
       react(),
       qrcode(),
     ],
+    optimizeDeps: {
+      entries: ['index.html', 'SRC/**/*.{js,jsx}'],
+      exclude: ['android', 'ios', 'wordpress-plugin'],
+    },
     build: {
       outDir: isWP ? 'wordpress-plugin/assets' : 'dist',
       emptyOutDir: true,
       rollupOptions: {
         output: {
-          // Keep these fixed to make WordPress plugin enqueueing easy
-          entryFileNames: `index.js`,
-          chunkFileNames: `[name].js`,
-          assetFileNames: `[name].[ext]`
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return;
+
+            if (id.includes('firebase/firestore')) return 'firebase-firestore';
+            if (id.includes('firebase/auth')) return 'firebase-auth';
+            if (id.includes('firebase/storage')) return 'firebase-storage';
+            if (id.includes('firebase')) return 'firebase-vendor';
+            if (id.includes('framer-motion')) return 'motion-vendor';
+            if (id.includes('react')) return 'react-vendor';
+            if (id.includes('lucide-react') || id.includes('qrcode.react')) return 'ui-vendor';
+
+            return 'vendor';
+          },
+          entryFileNames: isWP ? `index.js` : `assets/[name]-[hash].js`,
+          chunkFileNames: isWP ? `[name].js` : `assets/[name]-[hash].js`,
+          assetFileNames: isWP ? `[name].[ext]` : `assets/[name]-[hash][extname]`
         }
       }
     },
     server: {
-      host: true,      // Telefondan erişim için zorunlu
+      host: true,
       port: 5173,
-      strictPort: true, // Portun değişmesini engeller; her zaman 5173
+      strictPort: true,
       open: true,
       proxy: {
         '/api/nobetci': {
@@ -54,4 +66,3 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
-

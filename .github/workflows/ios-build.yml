@@ -60,9 +60,9 @@ jobs:
             echo -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > ios/App/App/GoogleService-Info.plist
           elif [ -f "ios/App/App/GoogleService-Info.plist.template" ]; then
             cp ios/App/App/GoogleService-Info.plist.template ios/App/App/GoogleService-Info.plist
-            echo "Secret yok, template plist kullanıldı."
+            echo "Template plist was used."
           else
-            echo "GoogleService-Info.plist veya template bulunamadı."
+            echo "GoogleService-Info.plist or template was not found."
             exit 1
           fi
 
@@ -81,7 +81,7 @@ jobs:
           if [ -f "Podfile" ]; then
             pod install --repo-update
           else
-            echo "Podfile yok, CocoaPods adımı atlanıyor."
+            echo "Podfile not found, CocoaPods step skipped."
           fi
 
       - name: Build iOS simulator app

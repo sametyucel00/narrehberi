@@ -10,16 +10,19 @@
 )
 
 $failed = $false
+$dotlessI = [char]305
+$capitalI = [char]304
+$uuml = [char]252
 
 Write-Host ""
-Write-Host "iOS release hazırlık kontrolü"
+Write-Host ("iOS release haz" + $dotlessI + "rl" + $dotlessI + "k kontrol" + $uuml)
 Write-Host ""
 
 foreach ($check in $checks) {
     if (Test-Path $check.Path) {
         Write-Host "[OK] $($check.Name)"
     } else {
-        Write-Host "[EKSİK] $($check.Name) -> $($check.Path)"
+        Write-Host ("[EKS" + $capitalI + "K] $($check.Name) -> $($check.Path)")
         $failed = $true
     }
 }
