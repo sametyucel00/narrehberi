@@ -84,6 +84,14 @@ jobs:
       - name: Sync Capacitor Android
         run: npx cap sync android
 
+      - name: Set Android release version
+        run: |
+          ANDROID_CODE=$((GITHUB_RUN_NUMBER + 8))
+          echo "ANDROID_VERSION_CODE=$ANDROID_CODE" >> "$GITHUB_ENV"
+          echo "ANDROID_VERSION_NAME=9.0" >> "$GITHUB_ENV"
+          echo "Android versionCode: $ANDROID_CODE"
+          echo "Android versionName: 9.0"
+
       - name: Grant Gradle execute permission
         run: chmod +x android/gradlew
 
